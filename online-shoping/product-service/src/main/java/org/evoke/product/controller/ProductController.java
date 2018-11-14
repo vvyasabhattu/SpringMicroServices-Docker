@@ -129,7 +129,7 @@ public class ProductController {
 	}
 
 	@GetMapping("{product_id}")
-	public @ResponseBody Product getProductById(@PathVariable("product_id") int product_id) {
+	public @ResponseBody ProductResponse getProductById(@PathVariable("product_id") int product_id) {
 
 		return ps.getProductById(product_id);
 	}

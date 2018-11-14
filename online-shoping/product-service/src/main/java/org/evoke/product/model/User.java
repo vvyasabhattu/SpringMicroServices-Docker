@@ -62,14 +62,14 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	//@NotBlank(message = "Please enter password!")
 	private String password;
 
-	@JsonIgnore
+	//@JsonIgnore
 	@NotNull
 	@Size(min = 1, max = 8)
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id", nullable = false)
 	private List<Role> roleLst;
 
-	@JsonIgnore
+	//@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id", nullable = false)
 	private List<Address> addressLst;

@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -61,19 +62,19 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	//@NotBlank(message = "Please enter password!")
 	private String password;
 
+	//@JsonIgnore
 	@NotNull
 	@Size(min = 1, max = 8)
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id", nullable = false)
 	private List<Role> roleLst;
 
+	//@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id", nullable = false)
 	private List<Address> addressLst;
-	
-	
-	/*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "user_id", nullable = false)*/
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<Product> productLst;
 

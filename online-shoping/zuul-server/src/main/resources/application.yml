@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.99.100:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
 zuul:
   #Service will be mapped under the /api URI
@@ -21,9 +21,20 @@ zuul:
     customer-by-service:
       path: /user-by-service/**
       serviceId: USER-SERVICE
+    product-by-service:
+      path: /product-by-service/**
+      serviceId: PRODUCT-SERVICE
     static:
       path: /static/**
 
 spring:
   application:
     name: zuul-server
+    
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000

@@ -7,12 +7,15 @@ import javax.sql.DataSource;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -26,8 +29,12 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @EnableTransactionManagement
 @SpringBootApplication
 @EnableFeignClients
+@PropertySource("classpath:application.properties")
 public class ProductApplication {
 
+	@Autowired
+	private Environment env;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ProductApplication.class, args);
 	}
@@ -46,14 +53,22 @@ public class ProductApplication {
 	}
 
 	@Bean
-	public SessionFactory getSessionFactory() {
-
-		LocalSessionFactoryBuilder sessionFactory = new LocalSessionFactoryBuilder(dataSource());
-		sessionFactory.scanPackages("org.evoke.product.model").addProperties(hibernateProperties());
-
-		return sessionFactory.buildSessionFactory();
-
-	}
+    public SessionFactory getSessionFactory(){
+        LocalSessionFactoryBuilder sessionFactory = new LocalSessionFactoryBuilder(dataSource());
+        sessionFactory.scanPackages("org.evoke.product.model").addProperties(hibernateProperties());
+       
+        return sessionFactory.buildSessionFactory();
+    }
+	
+	 @Bean
+	    public Session getSession() {
+	    	try {
+	    	return getSessionFactory().getCurrentSession();
+	    	}catch(HibernateException ex) {
+	    		return getSessionFactory().openSession();
+	    	}
+	    }
+	
 
 	@Bean
 	public Properties hibernateProperties() {
@@ -68,21 +83,13 @@ public class ProductApplication {
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-		dataSource.setUrl("jdbc:mysql://localhost:3306/onlineshopping");
-		dataSource.setUsername("root");
-		dataSource.setPassword("root");
+		dataSource.setDriverClassName(env.getProperty("datasource.driver-class-name"));
+		dataSource.setUrl(env.getProperty("datasource.url"));
+		dataSource.setUsername(env.getProperty("datasource.username"));
+		dataSource.setPassword(env.getProperty("datasource.password"));
 		return dataSource;
 	}
 
-	@Bean
-	public Session getSession() {
-		try {
-			return getSessionFactory().getCurrentSession();
-		} catch (HibernateException ex) {
-			return getSessionFactory().openSession();
-		}
-	}
 
 	@Bean
 	public CommonsMultipartResolver multipartResolver() {

@@ -17,6 +17,8 @@ import org.evoke.product.model.User;
 import org.evoke.product.model.User_product;
 import org.evoke.product.util.DateUtil;
 import org.evoke.product.util.ProductMapper;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,39 +34,28 @@ public class ProductDaoImpl implements ProductDao {
 	private ServletContext servletContext;
 
 	@Autowired
-	private HibernateTemplate ht;
-
-	@Autowired
 	private SessionFactory sf;
-
-	private Category_product cp;
-
-	private User_product up;
-
-	private ProductMapper productMapper;
-
+	
 	@Autowired
-	Session session;
+	private Session session;
+	
+	
+	ProductResponse productResponse = null;
+	Product product = null;
 
-	@PostConstruct
-	public void init() {
-		cp = new Category_product();
-		up = new User_product();
-		productMapper = new ProductMapper();
-	}
 
-	@Transactional
 	public ProductResponse addProduct(Product product) {
 
-		
 		product.setCreatedUser(product.getUser().getFirstName());
 		product.setUpdatedUser(product.getUser().getFirstName());
 		product.setCreatedDate(DateUtil.getDDMMYYDate());
 		product.setUpdatedDate(DateUtil.getDDMMYYDate());
+		
 		session.saveOrUpdate(product);
-		session.flush();
-		session.evict(product);
-		ProductResponse productResponse = new ProductResponse();
+		//session.flush();
+		//session.evict(product);
+		
+		 productResponse = new ProductResponse();
 		List<Product> products = new ArrayList<Product>();
 		products.add(product);
 		productResponse.setProductLst(products);
@@ -75,25 +66,31 @@ public class ProductDaoImpl implements ProductDao {
 
 		ProductResponse response =  new ProductResponse();
 		
-		List<Product> productList = (List<Product>) ht.find("from Product");
+		Criteria c = session.createCriteria(Product.class);// ht.find("from Product");
+		List<Product> productList = (List<Product>) c.list();
+				
 
-		List<Product> productResList = new ArrayList<Product>();
-		if (!CollectionUtils.isEmpty(productList)) {
-			productMapper.map(productList, productResList, ht);
-		}
-		response.setProductLst(productResList);
-		return response;
+		 productResponse = new ProductResponse();
+			productResponse.setProductLst(productList);
+			return productResponse;
+		
 	}
 
-	public Product getProductById(int id) {
-
-		return ht.get(Product.class, id);
+	public ProductResponse getProductById(int id) {
+		
+		product = session.get(Product.class, id);
+		
+		 productResponse = new ProductResponse();
+			List<Product> products = new ArrayList<Product>();
+			products.add(product);
+			productResponse.setProductLst(products);
+			return productResponse;
 
 	}
 
 	public List<Product> getProductsByUserId(int id) {
-
-		User ud = ht.get(User.class, id);
+		
+		User ud = session.get(User.class, id);
 		return null;// ud.getProducts();
 
 	}

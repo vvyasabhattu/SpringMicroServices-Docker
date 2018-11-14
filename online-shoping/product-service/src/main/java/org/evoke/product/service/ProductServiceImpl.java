@@ -42,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
 		  return productDao.getProducts();
 	  }
 	  
-	  public Product getProductById(int id) {
+	  public ProductResponse getProductById(int id) {
 		  return productDao.getProductById(id);
 	  }
 	  

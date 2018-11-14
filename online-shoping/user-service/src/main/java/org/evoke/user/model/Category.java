@@ -14,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="category")
 public class Category implements Serializable {
@@ -26,6 +28,7 @@ public class Category implements Serializable {
 	
 	/*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "category_id", nullable = false)*/
+	@JsonIgnore
 	@OneToMany(mappedBy = "category")
 	private List<Product> productLst;
 	
