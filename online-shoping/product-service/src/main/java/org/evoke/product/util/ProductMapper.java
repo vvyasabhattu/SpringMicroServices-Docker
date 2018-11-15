@@ -28,11 +28,8 @@ public class ProductMapper {
 			
 			productTo.setProduct_id(product.getProduct_id());
 			productTo.setProduct_name(product.getProduct_name());
-			productTo.setCondition_product(product.getCondition_product());
 			productTo.setDescription(product.getDescription());
-			productTo.setYear_of_purchase(product.getYear_of_purchase());
 			productTo.setPrice(product.getPrice());
-			productTo.setPosted_date(product.getPosted_date());
 			
 		 up = (List<User_product>) ht.findByNamedParam("from User_product where product_id=:pi", new String[] { "pi" }, new Object[] {product.getProduct_id()});
 		

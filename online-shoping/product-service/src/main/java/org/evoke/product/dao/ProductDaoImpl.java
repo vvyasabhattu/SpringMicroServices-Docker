@@ -16,7 +16,6 @@ import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.User;
 import org.evoke.product.model.User_product;
 import org.evoke.product.util.DateUtil;
-import org.evoke.product.util.ProductMapper;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;

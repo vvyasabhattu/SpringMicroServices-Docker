@@ -32,14 +32,27 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@NotNull
 	private double price ;
 	
-	@NotNull
-	private int year_of_purchase;
-	
-	private String posted_date;
-	
 	private String description;
 	
-	private String condition_product;
+	//private String specification;
+	
+	//private String reviews;
+	
+	/**
+	 * @return the brand
+	 */
+	public String getBrand() {
+		return brand;
+	}
+
+	/**
+	 * @param brand the brand to set
+	 */
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	private String brand;
 	
 	@ManyToOne
 	@JoinColumn(name="user_id")
@@ -82,21 +95,6 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 		this.price = price;
 	}
 
-	public int getYear_of_purchase() {
-		return year_of_purchase;
-	}
-
-	public void setYear_of_purchase(int year_of_purchase) {
-		this.year_of_purchase = year_of_purchase;
-	}
-
-	public String getPosted_date() {
-		return posted_date;
-	}
-
-	public void setPosted_date(String posted_date) {
-		this.posted_date = posted_date;
-	}
 
 	public String getDescription() {
 		return description;
@@ -104,14 +102,6 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getCondition_product() {
-		return condition_product;
-	}
-
-	public void setCondition_product(String condition_product) {
-		this.condition_product = condition_product;
 	}
 
 	public User getUser() {
@@ -130,13 +120,15 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 		this.category = category;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Product [product_id=" + product_id + ", product_name=" + product_name + ", img_path=" + img_path
-				+ ", price=" + price + ", year_of_purchase=" + year_of_purchase + ", posted_date=" + posted_date
-				+ ", description=" + description + ", condition_product=" + condition_product + ", user=" + user
-				+ ", category=" + category + "]";
+				+ ", price=" + price + ", description=" + description + "]";
 	}
 
+	
 
 }
