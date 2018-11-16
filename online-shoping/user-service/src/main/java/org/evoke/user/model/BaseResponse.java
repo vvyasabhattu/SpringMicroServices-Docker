@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.evoke.user.web.error.ErrorMessage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class BaseResponse extends ErrorMessage{
 
 	
@@ -11,6 +13,7 @@ public class BaseResponse extends ErrorMessage{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@JsonIgnore
 	private Map<String,Object> response;
 
 	public Map<String, Object> getResponse() {
