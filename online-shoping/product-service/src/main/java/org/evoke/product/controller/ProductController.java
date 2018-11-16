@@ -12,6 +12,7 @@ import org.evoke.product.model.LoginRequest;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductRequest;
 import org.evoke.product.model.ProductResponse;
+import org.evoke.product.model.ProductResponseList;
 import org.evoke.product.model.User;
 import org.evoke.product.model.UserResponse;
 import org.evoke.product.service.ProductServiceImpl;
@@ -82,14 +83,12 @@ public class ProductController {
 	}
 
 	@PostMapping
-	public ProductResponse add(@RequestBody ProductRequest pRequest) {
+	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
 
 		UserResponse userResponse = null;
-		ProductResponse response = null ;
+		ProductResponseList response = null ;
 		
 		try {
-			
-			
 			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setUser(user);
@@ -101,10 +100,8 @@ public class ProductController {
 				response = ps.addProduct(pRequest);
 			}
 			
-
-			
 		} catch (Exception e) {
-			response = new ProductResponse();
+			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -115,31 +112,64 @@ public class ProductController {
 	}
 
 	@PutMapping
-	public ResponseEntity<Product> update() {
+	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
 
-		return null;
+		UserResponse userResponse = null;
+		ProductResponseList response = null ;
+		
+		try {
+			User user =pRequest.getProduct().getUser();			
+			LoginRequest loginRequest = new LoginRequest();
+			loginRequest.setUser(user);
+			userResponse = userService.getUser(loginRequest);
+			
+			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
 
+				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
+				response = ps.updateProduct(pRequest);
+			}
+			
+		} catch (Exception e) {
+			response = new ProductResponseList();
+			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			return response;
+		}
+
+		return response;
 	}
+	
 
 	@GetMapping("/all")
-	public @ResponseBody ProductResponse getProducts() {
+	public @ResponseBody ProductResponseList getProducts() {
 
 		return ps.getProducts();
 
 	}
 
 	@GetMapping("{product_id}")
-	public @ResponseBody ProductResponse getProductById(@PathVariable("product_id") int product_id) {
+	public @ResponseBody ProductResponseList getProductById(@PathVariable("product_id") int product_id) {
 
 		return ps.getProductById(product_id);
 	}
 
-	@GetMapping("byUserId/{user_id}")
+/*	@GetMapping("byUser/{user_id}")
 	public @ResponseBody List<Product> getProductsByUserId(@PathVariable("user_id") int user_id) {
 
 		List<Product> pList = (List<Product>) ps.getProductsByUserId(user_id);
 
 		return pList;
 	}
+	
+	@GetMapping("byCategory/{category_id}")
+	public @ResponseBody List<Product> getProductsByCategoryId(@PathVariable("category_id") int category_id) {
+
+		List<Product> pList = (List<Product>) ps.getProductsByCategoryId(category_id);
+
+		return pList;
+	}*/
+	
+	
 
 }

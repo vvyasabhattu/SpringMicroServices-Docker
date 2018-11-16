@@ -13,9 +13,11 @@ import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.Category_product;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
+import org.evoke.product.model.ProductResponseList;
 import org.evoke.product.model.User;
 import org.evoke.product.model.User_product;
 import org.evoke.product.util.DateUtil;
+import org.evoke.product.util.ProductMapper;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -38,30 +40,55 @@ public class ProductDaoImpl implements ProductDao {
 	@Autowired
 	private Session session;
 	
+	@Autowired
+	ProductMapper productMapper;
+	
 	
 	ProductResponse productResponse = null;
 	Product product = null;
+	ProductResponseList prl = null;
 
 
-	public ProductResponse addProduct(Product product) {
+	public ProductResponseList addProduct(Product product) {
 
 		product.setCreatedUser(product.getUser().getFirstName());
 		product.setUpdatedUser(product.getUser().getFirstName());
 		product.setCreatedDate(DateUtil.getDDMMYYDate());
 		product.setUpdatedDate(DateUtil.getDDMMYYDate());
 		
-		session.saveOrUpdate(product);
+		int id = (int) session.save(product);
 		//session.flush();
 		//session.evict(product);
 		
-		 productResponse = new ProductResponse();
-		List<Product> products = new ArrayList<Product>();
-		products.add(product);
-		productResponse.setProductLst(products);
-		return productResponse;
+		product.setProduct_id(id);
+		List<Product> productList = new ArrayList<Product>() ;
+		productList.add(product);
+		
+		return MapProductResponse(productList);
+		
+	}
+	
+	public ProductResponseList updateProduct(Product product) {
+
+		product.setUpdatedUser(product.getUser().getFirstName());
+		product.setUpdatedDate(DateUtil.getDDMMYYDate());
+		
+	//	product 
+		
+		session.evict(product);
+		session.saveOrUpdate(product);
+		session.flush();
+		//session.evict(product);
+		
+		List<Product> productList = new ArrayList<Product>() ;
+		productList.add(product);
+		
+		return MapProductResponse(productList);
+	    
 	}
 
-	public ProductResponse getProducts() {
+
+	public ProductResponseList getProducts() {
 
 		ProductResponse response =  new ProductResponse();
 		
@@ -69,21 +96,18 @@ public class ProductDaoImpl implements ProductDao {
 		List<Product> productList = (List<Product>) c.list();
 				
 
-		 productResponse = new ProductResponse();
-			productResponse.setProductLst(productList);
-			return productResponse;
+		return MapProductResponse(productList);
 		
 	}
 
-	public ProductResponse getProductById(int id) {
+	public ProductResponseList getProductById(int id) {
 		
 		product = session.get(Product.class, id);
 		
-		 productResponse = new ProductResponse();
-			List<Product> products = new ArrayList<Product>();
-			products.add(product);
-			productResponse.setProductLst(products);
-			return productResponse;
+		List<Product> productList = new ArrayList<Product>();
+		productList.add(product);
+		
+		return MapProductResponse(productList);
 
 	}
 
@@ -92,6 +116,18 @@ public class ProductDaoImpl implements ProductDao {
 		User ud = session.get(User.class, id);
 		return null;// ud.getProducts();
 
+	}
+	
+	
+	public ProductResponseList MapProductResponse(List<Product> productList) {
+		List<ProductResponse> productResList = new ArrayList<ProductResponse>();
+		if(!CollectionUtils.isEmpty(productList)) {
+			productMapper.map(productList, productResList);
+		}
+	 
+		ProductResponseList prl =new ProductResponseList();
+		prl.setProductResponse(productResList);
+	    return prl;
 	}
 
 }

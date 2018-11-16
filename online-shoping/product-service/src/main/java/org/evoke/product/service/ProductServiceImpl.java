@@ -5,9 +5,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.evoke.product.dao.ProductDaoImpl;
+import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductRequest;
 import org.evoke.product.model.ProductResponse;
+import org.evoke.product.model.ProductResponseList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
@@ -27,28 +29,46 @@ public class ProductServiceImpl implements ProductService {
 	 }
 	  
 	 @Override
-	 public ProductResponse addProduct(ProductRequest pr) {
+	 public ProductResponseList addProduct(ProductRequest pr) {
 		  
-		 ProductResponse baseResponse  = null;
+		 ProductResponseList baseResponse  = null;
 		 if(null != pr  && null != pr.getProduct() ) {
 			 baseResponse =  productDao.addProduct(pr.getProduct());
 		 }
 		   return baseResponse;
 		   
 	  }
-	  
-	  
-	  public ProductResponse getProducts() {
+	 
+	 
+	 @Override
+		public ProductResponseList updateProduct(ProductRequest pr) {
+			 
+			ProductResponseList baseResponse  = null;
+			 if(null != pr  && null != pr.getProduct() ) {
+				 baseResponse =  productDao.updateProduct(pr.getProduct());
+			 }
+			   return baseResponse;
+			   
+		}
+	 
+	 
+	  public ProductResponseList getProducts() {
 		  return productDao.getProducts();
 	  }
 	  
-	  public ProductResponse getProductById(int id) {
+	  public ProductResponseList getProductById(int id) {
 		  return productDao.getProductById(id);
 	  }
 	  
-	  public List<Product> getProductsByUserId(int id) {
+	/*  public List<Product> getProductsByUserId(int id) {
 		  return productDao.getProductsByUserId(id);
 	  }
+
+	@Override
+	public List<Product> getProductsByCategoryId(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}*/
 	  
 	
 }
