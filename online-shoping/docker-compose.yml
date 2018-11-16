@@ -15,3 +15,8 @@ services:
     build: ./zuul-server
     ports:
       - 9090:9090
+
+  product-service:
+    build: ./product-service
+    ports:
+      - 9099:9099
