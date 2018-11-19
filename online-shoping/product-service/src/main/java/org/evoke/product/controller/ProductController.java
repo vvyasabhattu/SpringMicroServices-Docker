@@ -20,6 +20,7 @@ import org.evoke.product.util.ProductMapper;
 import org.evoke.product.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,15 +43,11 @@ public class ProductController {
 	@Autowired
 	ProductMapper productMapper;
 
-	private Response response;
-
-	@PostConstruct
-	public void init() {
-		response = new Response();
-	}
-
 	@Autowired
 	private UserService userService;
+	
+	ProductResponseList response = null ;
+	UserResponse userResponse = null;
 
 	@GetMapping("/check")
 	public void getCheck() throws RestClientException, IOException {
@@ -85,9 +82,6 @@ public class ProductController {
 	@PostMapping
 	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
 
-		UserResponse userResponse = null;
-		ProductResponseList response = null ;
-		
 		try {
 			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
@@ -115,19 +109,18 @@ public class ProductController {
 	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
 
 		UserResponse userResponse = null;
-		ProductResponseList response = null ;
 		
 		try {
-			User user =pRequest.getProduct().getUser();			
+			/*User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setUser(user);
-			userResponse = userService.getUser(loginRequest);
+			userResponse = userService.getUser(loginRequest);*/
 			
-			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
+			//if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
 
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
+				//pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
 				response = ps.updateProduct(pRequest);
-			}
+			//}
 			
 		} catch (Exception e) {
 			response = new ProductResponseList();
@@ -138,6 +131,24 @@ public class ProductController {
 		}
 
 		return response;
+	}
+	
+	@DeleteMapping
+	public @ResponseBody ProductResponseList delete(@RequestBody ProductRequest pRequest){
+		
+		try {
+				response = ps.deleteProduct(pRequest);
+			
+		} catch (Exception e) {
+			response = new ProductResponseList();
+			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			return response;
+		}
+
+		return response;
+		
 	}
 	
 

@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 
+import org.evoke.product.error.ErrorCode;
+import org.evoke.product.error.ErrorType;
 import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.Category_product;
 import org.evoke.product.model.Product;
@@ -43,7 +45,7 @@ public class ProductDaoImpl implements ProductDao {
 	@Autowired
 	ProductMapper productMapper;
 	
-	
+	ProductResponseList productResponseList = null;
 	ProductResponse productResponse = null;
 	Product product = null;
 	ProductResponseList prl = null;
@@ -70,23 +72,54 @@ public class ProductDaoImpl implements ProductDao {
 	
 	public ProductResponseList updateProduct(Product product) {
 
-		product.setUpdatedUser(product.getUser().getFirstName());
+		product.setUpdatedUser("");//product.getUser().getFirstName());
 		product.setUpdatedDate(DateUtil.getDDMMYYDate());
+		Product product_db = null;
 		
-	//	product 
+		try {
+		 product_db = session.get(Product.class,product.getProduct_id());
+		product_db.setCategory(product.getCategory());
+		}
+		catch(Exception e) {
+
+			  productResponseList = new ProductResponseList();
+			  productResponseList.setErrorCode(ErrorCode.PRODUCT_NOT_FOUND);
+			  productResponseList.setErrorDesc(e.getMessage());
+			  productResponseList.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+				return productResponseList;
+			
+		}
 		
-		session.evict(product);
-		session.saveOrUpdate(product);
+		product_db.setBrand(product.getBrand());
+		product_db.setDescription(product.getDescription());
+		product_db.setPrice(product.getPrice());
+		product_db.setImg_path(product.getImg_path());
+		product_db.setProduct_name(product.getProduct_name());
+		
+		session.clear();
+		session.update(product_db);
 		session.flush();
 		//session.evict(product);
 		
 		List<Product> productList = new ArrayList<Product>() ;
-		productList.add(product);
+		productList.add(product_db);
 		
 		return MapProductResponse(productList);
 	    
 	}
 
+	
+	public ProductResponseList deleteProduct(Product product) {
+		
+		session.clear();
+		session.delete(product);
+		
+		List<Product> productList = new ArrayList<Product>() ;
+		productList.add(product);
+		
+		return MapProductResponse(productList);
+		
+	}
 
 	public ProductResponseList getProducts() {
 

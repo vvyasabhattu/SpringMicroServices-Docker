@@ -11,8 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 @Entity
 @Table(name = "product")
+@DynamicUpdate
 public class Product extends AbstractTimestampEntity implements Serializable{
 	
 	/**

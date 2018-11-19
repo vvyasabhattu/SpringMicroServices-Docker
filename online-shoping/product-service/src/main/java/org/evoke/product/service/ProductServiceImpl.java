@@ -52,6 +52,17 @@ public class ProductServiceImpl implements ProductService {
 		}
 	 
 	 
+	 public ProductResponseList deleteProduct(ProductRequest pr) {
+		 
+			ProductResponseList baseResponse  = null;
+			 if(null != pr  && null != pr.getProduct() ) {
+				 baseResponse =  productDao.deleteProduct(pr.getProduct());
+			 }
+			   return baseResponse;
+			   
+		}
+	 
+	 
 	  public ProductResponseList getProducts() {
 		  return productDao.getProducts();
 	  }

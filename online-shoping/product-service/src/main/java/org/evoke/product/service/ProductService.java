@@ -13,6 +13,8 @@ public interface ProductService {
 	 
 	 public ProductResponseList updateProduct(ProductRequest pr);
 	 
+	// deleteProduct
+	 
 	 public ProductResponseList getProducts();
 	 
 	 public ProductResponseList getProductById(int id) ;

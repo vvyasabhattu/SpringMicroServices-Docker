@@ -10,6 +10,6 @@ public interface ErrorCode {
 	int USER_DETAILS_OBJECT_NOT_FOUND = 1005;
 	int EMAIL_NOT_VALID = 1006;
 	int PRODUCT_NOT_VALID = 1007;
-	
-	
+	int PRODUCT_NOT_FOUND = 1008;
+	//int PRODUCT_NOT_VALID 
 }
