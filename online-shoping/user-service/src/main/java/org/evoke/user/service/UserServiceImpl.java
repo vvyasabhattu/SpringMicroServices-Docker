@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 				newuser.getAddressLst().get(0).setUpdatedUser(user.getFirstName());
 				
 			}
-			session.saveOrUpdate(newuser);
+			session.save(newuser);
 			session.flush();
 			session.evict(newuser);
 			response = new UserResponse();

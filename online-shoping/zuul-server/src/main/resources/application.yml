@@ -4,15 +4,26 @@ spring:
     
 server:
   port: 9090
-
+              
+              
 hystrix:
   command:
     default:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 60000
-            
+            timeoutInMilliseconds: 60000000
+
+ribbon:
+  maxAutoRetries: 1
+  MaxAutoRetriesNextServer: 2
+  ConnectTimeout: 1000000
+  ReadTimeout: 1000000
+  eureka:
+    enabled: true
+    
+    
+
 eureka:
   client:
     serviceUrl:
