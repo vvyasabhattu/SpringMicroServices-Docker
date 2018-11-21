@@ -13,14 +13,16 @@ public interface ProductService {
 	 
 	 public ProductResponseList updateProduct(ProductRequest pr);
 	 
-	// deleteProduct
+	 public ProductResponseList deleteProduct(ProductRequest pr);
 	 
 	 public ProductResponseList getProducts();
 	 
 	 public ProductResponseList getProductById(int id) ;
 	 
-	// public ProductResponseList getProductsByUserId(int id);
+	 public ProductResponseList getProductsByUserId(int id);
 	 
-	 //public ProductResponseList getProductsByCategoryId(int id);
+	 public ProductResponseList getProductsByCategoryId(int id);
+	 
+	// public boolean CheckProductName(String productName);
 	 
 }

@@ -51,34 +51,39 @@ public class ProductServiceImpl implements ProductService {
 			   
 		}
 	 
-	 
+	 @Override
 	 public ProductResponseList deleteProduct(ProductRequest pr) {
 		 
 			ProductResponseList baseResponse  = null;
-			 if(null != pr  && null != pr.getProduct() ) {
 				 baseResponse =  productDao.deleteProduct(pr.getProduct());
-			 }
 			   return baseResponse;
 			   
 		}
 	 
-	 
+	 @Override
 	  public ProductResponseList getProducts() {
 		  return productDao.getProducts();
 	  }
 	  
+	 @Override
 	  public ProductResponseList getProductById(int id) {
 		  return productDao.getProductById(id);
 	  }
 	  
-	/*  public List<Product> getProductsByUserId(int id) {
+	 @Override
+	  public ProductResponseList getProductsByUserId(int id) {
 		  return productDao.getProductsByUserId(id);
 	  }
 
-	@Override
-	public List<Product> getProductsByCategoryId(int id) {
-		// TODO Auto-generated method stub
-		return null;
+	 @Override
+	public ProductResponseList getProductsByCategoryId(int id) {
+		
+		 return productDao.getProductsByCategoryId(id);
+	}
+
+	/*@Override
+	public boolean CheckProductName(String productName) {
+		return productDao.CheckProductName(productName);
 	}*/
 	  
 	

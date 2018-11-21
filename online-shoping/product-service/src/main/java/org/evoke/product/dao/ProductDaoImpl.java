@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 
 import org.evoke.product.error.ErrorCode;
+import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
 import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.Category_product;
@@ -22,6 +23,7 @@ import org.evoke.product.util.DateUtil;
 import org.evoke.product.util.ProductMapper;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +51,17 @@ public class ProductDaoImpl implements ProductDao {
 	ProductResponse productResponse = null;
 	Product product = null;
 	ProductResponseList prl = null;
+	Product product_db = null;
 
-
+    @Override
 	public ProductResponseList addProduct(Product product) {
 
 		product.setCreatedUser(product.getUser().getFirstName());
 		product.setUpdatedUser(product.getUser().getFirstName());
 		product.setCreatedDate(DateUtil.getDDMMYYDate());
 		product.setUpdatedDate(DateUtil.getDDMMYYDate());
+		product.setIs_deleted("no");
+		
 		
 		int id = (int) session.save(product);
 		//session.flush();
@@ -70,26 +75,23 @@ public class ProductDaoImpl implements ProductDao {
 		
 	}
 	
+    @Override
 	public ProductResponseList updateProduct(Product product) {
 
-		product.setUpdatedUser("");//product.getUser().getFirstName());
+		product.setUpdatedUser(product.getUser().getFirstName());
 		product.setUpdatedDate(DateUtil.getDDMMYYDate());
-		Product product_db = null;
 		
-		try {
 		 product_db = session.get(Product.class,product.getProduct_id());
-		product_db.setCategory(product.getCategory());
-		}
-		catch(Exception e) {
-
-			  productResponseList = new ProductResponseList();
+		
+		 if(product_db==null) {
+			 productResponseList = new ProductResponseList();
 			  productResponseList.setErrorCode(ErrorCode.PRODUCT_NOT_FOUND);
-			  productResponseList.setErrorDesc(e.getMessage());
+			  productResponseList.setErrorDesc(ErrorDescription.PRODUCT_NOT_FOUND);
 			  productResponseList.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
 				return productResponseList;
-			
-		}
-		
+		 }
+		 else {
+		 product_db.setCategory(product.getCategory());
 		product_db.setBrand(product.getBrand());
 		product_db.setDescription(product.getDescription());
 		product_db.setPrice(product.getPrice());
@@ -99,28 +101,38 @@ public class ProductDaoImpl implements ProductDao {
 		session.clear();
 		session.update(product_db);
 		session.flush();
-		//session.evict(product);
 		
 		List<Product> productList = new ArrayList<Product>() ;
 		productList.add(product_db);
 		
 		return MapProductResponse(productList);
+		 }
 	    
 	}
 
-	
+    @Override
 	public ProductResponseList deleteProduct(Product product) {
 		
-		session.clear();
-		session.delete(product);
-		
-		List<Product> productList = new ArrayList<Product>() ;
-		productList.add(product);
-		
-		return MapProductResponse(productList);
-		
+			 product_db = session.get(Product.class,product.getProduct_id());
+			
+			 if(product_db== null) {
+				 productResponseList = new ProductResponseList();
+				  productResponseList.setErrorCode(ErrorCode.PRODUCT_NOT_FOUND);
+				  productResponseList.setErrorDesc(ErrorDescription.PRODUCT_NOT_FOUND);
+				  productResponseList.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+					return productResponseList;
+			 }else {
+				 product_db.setIs_deleted("yes");
+				 session.clear();
+				 session.update(product_db);
+				 List<Product> productList = new ArrayList<Product>() ;
+					productList.add(product_db);
+					
+					return MapProductResponse(productList);
+			 }
 	}
 
+    @Override
 	public ProductResponseList getProducts() {
 
 		ProductResponse response =  new ProductResponse();
@@ -133,6 +145,7 @@ public class ProductDaoImpl implements ProductDao {
 		
 	}
 
+    @Override
 	public ProductResponseList getProductById(int id) {
 		
 		product = session.get(Product.class, id);
@@ -144,10 +157,21 @@ public class ProductDaoImpl implements ProductDao {
 
 	}
 
-	public List<Product> getProductsByUserId(int id) {
+    @Override
+	public ProductResponseList getProductsByUserId(int id) {
 		
 		User ud = session.get(User.class, id);
 		return null;// ud.getProducts();
+
+	}
+	
+    @Override
+	public ProductResponseList getProductsByCategoryId(int id) {
+		
+    	 Query query = session.createQuery("from Product where category_id=:id");  //get(User.class, id);
+		 query.setInteger("id", id);
+    	 List<Product> productList = query.list() ;
+    	 return MapProductResponse(productList);// ud.getProducts();
 
 	}
 	

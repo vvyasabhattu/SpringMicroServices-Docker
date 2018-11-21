@@ -11,5 +11,6 @@ public interface ErrorCode {
 	int EMAIL_NOT_VALID = 1006;
 	int PRODUCT_NOT_VALID = 1007;
 	int PRODUCT_NOT_FOUND = 1008;
+	int INTERNAL_SERVER_ERROR = 500 ;
 	//int PRODUCT_NOT_VALID 
 }

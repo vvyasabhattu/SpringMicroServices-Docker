@@ -28,6 +28,22 @@ public class ProductResponse {
 	
 	private String description;
 	
+	/**
+	 * @return the is_deleted
+	 */
+	public String getIs_deleted() {
+		return is_deleted;
+	}
+
+	/**
+	 * @param is_deleted the is_deleted to set
+	 */
+	public void setIs_deleted(String is_deleted) {
+		this.is_deleted = is_deleted;
+	}
+
+	private String is_deleted;
+	
 	//private String specification;
 	
 	//private String reviews;

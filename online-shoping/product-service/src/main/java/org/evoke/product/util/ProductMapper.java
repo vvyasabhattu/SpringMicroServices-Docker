@@ -35,6 +35,7 @@ public class ProductMapper {
 			productResponse.setDescription(product.getDescription());
 			productResponse.setPrice(product.getPrice());
 			productResponse.setBrand(product.getBrand());
+			productResponse.setIs_deleted(product.getIs_deleted());
 			
 			category = session.get(Category.class, product.getCategory().getCategory_id());
 			

@@ -9,4 +9,17 @@ public interface ProductDao {
 
 	
 	 public ProductResponseList addProduct(Product product) ;
+	 
+	 public ProductResponseList updateProduct(Product product) ;
+	 
+	 public ProductResponseList deleteProduct(Product product) ;
+	 
+	 public ProductResponseList getProducts();
+	 
+	 public ProductResponseList getProductById(int id);
+	 
+	 public ProductResponseList getProductsByCategoryId(int id);
+	 
+	 public ProductResponseList getProductsByUserId(int id);
+	 
 }

@@ -2,6 +2,7 @@ package org.evoke.product.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,7 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int product_id;
 	
+	@Column(unique = true)
 	@NotNull
 	private String product_name;
 	
@@ -41,6 +43,22 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	
 	//private String reviews;
 	
+	private String is_deleted;
+	
+	/**
+	 * @return the is_deleted
+	 */
+	public String getIs_deleted() {
+		return is_deleted;
+	}
+
+	/**
+	 * @param is_deleted the is_deleted to set
+	 */
+	public void setIs_deleted(String is_deleted) {
+		this.is_deleted = is_deleted;
+	}
+
 	/**
 	 * @return the brand
 	 */
@@ -129,9 +147,9 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@Override
 	public String toString() {
 		return "Product [product_id=" + product_id + ", product_name=" + product_name + ", img_path=" + img_path
-				+ ", price=" + price + ", description=" + description + "]";
+				+ ", price=" + price + ", description=" + description + ", is_deleted=" + is_deleted + ", brand="
+				+ brand + "]";
 	}
 
-	
 
 }

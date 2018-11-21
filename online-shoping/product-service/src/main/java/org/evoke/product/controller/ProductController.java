@@ -1,10 +1,17 @@
 package org.evoke.product.controller;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
 
+import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorCode;
 import org.evoke.product.error.ErrorType;
 import org.evoke.product.model.BaseResponse;
@@ -31,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/product")
@@ -45,6 +53,9 @@ public class ProductController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+    private ServletContext servletContext;
 	
 	ProductResponseList response = null ;
 	UserResponse userResponse = null;
@@ -94,6 +105,15 @@ public class ProductController {
 				response = ps.addProduct(pRequest);
 			}
 			
+			else {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+				return response;
+			}
+			
+			
 		} catch (Exception e) {
 			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
@@ -104,6 +124,29 @@ public class ProductController {
 
 		return response;
 	}
+	
+	
+	@PostMapping("/addProductImg")
+	//@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public boolean addProductImg(@RequestBody MultipartFile img) {
+
+		  String UPLOADED_FOLDER = servletContext.getContextPath();
+		   
+		  try {
+	        	if(img!=null) {
+	            // Get the file and save it somewhere
+	            byte[] bytes = img.getBytes();
+	            Path path = Paths.get(UPLOADED_FOLDER +img.getOriginalFilename());
+	            Files.write(path, bytes);
+	        	}
+	            return true;
+	        	
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+		
+	}
 
 	@PutMapping
 	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
@@ -111,16 +154,24 @@ public class ProductController {
 		UserResponse userResponse = null;
 		
 		try {
-			/*User user =pRequest.getProduct().getUser();			
+			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setUser(user);
-			userResponse = userService.getUser(loginRequest);*/
+			userResponse = userService.getUser(loginRequest);
 			
-			//if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
+			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
 
-				//pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
+				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
 				response = ps.updateProduct(pRequest);
-			//}
+			}
+			
+			else {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+				return response;
+			}
 			
 		} catch (Exception e) {
 			response = new ProductResponseList();
@@ -154,15 +205,30 @@ public class ProductController {
 
 	@GetMapping("/all")
 	public @ResponseBody ProductResponseList getProducts() {
-
-		return ps.getProducts();
-
+		try {
+			return ps.getProducts();
+			}
+			catch(Exception e) {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
 	}
 
 	@GetMapping("{product_id}")
 	public @ResponseBody ProductResponseList getProductById(@PathVariable("product_id") int product_id) {
-
-		return ps.getProductById(product_id);
+		try {
+		   return ps.getProductById(product_id);
+		}
+		catch(Exception e) {
+			response = new ProductResponseList();
+			response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			return response;
+		}
 	}
 
 /*	@GetMapping("byUser/{user_id}")
@@ -171,14 +237,27 @@ public class ProductController {
 		List<Product> pList = (List<Product>) ps.getProductsByUserId(user_id);
 
 		return pList;
-	}
+	}*/
 	
 	@GetMapping("byCategory/{category_id}")
-	public @ResponseBody List<Product> getProductsByCategoryId(@PathVariable("category_id") int category_id) {
-
-		List<Product> pList = (List<Product>) ps.getProductsByCategoryId(category_id);
-
-		return pList;
+	public @ResponseBody ProductResponseList getProductsByCategoryId(@PathVariable("category_id") int category_id) {
+		    try {
+			return ps.getProductsByCategoryId(category_id);
+			}
+			catch(Exception e) {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
+	}
+	
+	
+	/*public boolean CheckProductName(String productName) {
+		
+		return ps.CheckProductName(productName);
+		
 	}*/
 	
 	
