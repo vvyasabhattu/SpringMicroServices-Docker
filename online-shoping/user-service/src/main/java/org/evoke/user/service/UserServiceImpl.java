@@ -98,8 +98,8 @@ public class UserServiceImpl implements UserService {
 				
 			}
 			session.save(newuser);
-			session.flush();
-			session.evict(newuser);
+			//session.flush();
+			//session.evict(newuser);
 			response = new UserResponse();
 			lstUser = new ArrayList<User>();
 			newuser.setPassword(null);
