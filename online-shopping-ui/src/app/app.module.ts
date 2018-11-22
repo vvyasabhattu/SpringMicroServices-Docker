@@ -6,15 +6,14 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
 import { HomeComponent } from './home/home.component';
 import { UiModule } from './ui/ui.module';
 import { LoginComponent } from './login/login.component';
-import { SignupComponent } from './signup/signup.component';
+
 import { HttpClientModule }    from '@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent,
-    SignupComponent
+    LoginComponent
   ],
   imports: [
     BrowserModule,
