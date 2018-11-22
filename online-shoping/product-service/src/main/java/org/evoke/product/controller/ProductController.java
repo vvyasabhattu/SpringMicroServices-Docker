@@ -1,32 +1,25 @@
 package org.evoke.product.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
 
-import org.evoke.product.error.ErrorDescription;
+import org.evoke.product.dao.ProductDao;
 import org.evoke.product.error.ErrorCode;
+import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
-import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.LoginRequest;
-import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductRequest;
-import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.ProductResponseList;
 import org.evoke.product.model.User;
 import org.evoke.product.model.UserResponse;
 import org.evoke.product.service.ProductServiceImpl;
 import org.evoke.product.util.ProductMapper;
-import org.evoke.product.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +52,7 @@ public class ProductController {
 	
 	ProductResponseList response = null ;
 	UserResponse userResponse = null;
+	String sep = File.separator;
 
 	@GetMapping("/check")
 	public void getCheck() throws RestClientException, IOException {
@@ -92,16 +86,29 @@ public class ProductController {
 
 	@PostMapping
 	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
-
+		
 		try {
+			
+			if (IsProductExists(pRequest.getProduct().getProduct_name())) {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.PRODUCT_ALREADY_EXISTS);
+				response.setErrorDesc(ErrorDescription.PRODUCT_ALREADY_EXISTS);
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+
+				return response;
+			}
+			
+			
 			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setUser(user);
 			userResponse = userService.getUser(loginRequest);
 			
 			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
-
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
+				
+				
+				//if(userResponse.getUserLst().get(0).getRoleLst().)
+				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
 				response = ps.addProduct(pRequest);
 			}
 			
@@ -126,25 +133,44 @@ public class ProductController {
 	}
 	
 	
-	@PostMapping("/addProductImg")
-	//@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public boolean addProductImg(@RequestBody MultipartFile img) {
+	@PostMapping("/addProductImg/{product_id}")
+	public ProductResponseList addProductImg(@RequestBody MultipartFile img,@PathVariable("product_id") int product_id) {
 
-		  String UPLOADED_FOLDER = servletContext.getContextPath();
+		String UPLOADED_FOLDER =  servletContext.getContextPath();
+		
+		//  String UPLOADED_FOLDER = servletContext.getRealPath(sep)+"images"+sep;
+		  
+		/*  File theDir = new File(UPLOADED_FOLDER);
+		  File file = null;
+
+		// if the directory does not exist, create it
+		   if (!theDir.exists()) {
+		    System.out.println("creating directory: " + theDir.getName());
+		    boolean result = false;
+		        theDir.mkdir();
+		   }*/
 		   
 		  try {
 	        	if(img!=null) {
-	            // Get the file and save it somewhere
-	            byte[] bytes = img.getBytes();
-	            Path path = Paths.get(UPLOADED_FOLDER +img.getOriginalFilename());
-	            Files.write(path, bytes);
+		            // Get the file and save it somewhere
+		        	//file = new File(UPLOADED_FOLDER+ product_id + "_"+ img.getOriginalFilename());
+		        	
+		        	//if(!file.exists()) {
+		            byte[] bytes = img.getBytes();
+		            Path path = Paths.get(UPLOADED_FOLDER + product_id + "_"+ img.getOriginalFilename());
+		            Files.write(path, bytes);
+		        	//}
+		        	
 	        	}
-	            return true;
+	        	
+	        	return ps.updateProductImgPath(product_id,product_id + "_"+ img.getOriginalFilename());
 	        	
 	        } catch (IOException e) {
-	            e.printStackTrace();
-	            return false;
-	        }
+	        	response = new ProductResponseList();
+				response.setErrorCode(100);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;	        }
 		
 	}
 
@@ -154,6 +180,15 @@ public class ProductController {
 		UserResponse userResponse = null;
 		
 		try {
+			
+			if (IsProductExists(pRequest.getProduct().getProduct_name())) {
+				response = new ProductResponseList();
+				response.setErrorCode(ErrorCode.PRODUCT_ALREADY_EXISTS);
+				response.setErrorDesc(ErrorDescription.PRODUCT_ALREADY_EXISTS);
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
+			
 			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setUser(user);
@@ -254,11 +289,11 @@ public class ProductController {
 	}
 	
 	
-	/*public boolean CheckProductName(String productName) {
+	public boolean IsProductExists(String productName) {
 		
-		return ps.CheckProductName(productName);
+		return ps.IsProductExists(productName);
 		
-	}*/
+	}
 	
 	
 

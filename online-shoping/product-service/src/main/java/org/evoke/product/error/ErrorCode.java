@@ -12,5 +12,6 @@ public interface ErrorCode {
 	int PRODUCT_NOT_VALID = 1007;
 	int PRODUCT_NOT_FOUND = 1008;
 	int INTERNAL_SERVER_ERROR = 500 ;
+	int PRODUCT_ALREADY_EXISTS = 1009;
 	//int PRODUCT_NOT_VALID 
 }

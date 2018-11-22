@@ -10,4 +10,5 @@ public interface ErrorDescription {
 	String USER_DETAILS_OBJECT_NOT_FOUND = "User Object not found"; 
 	String USER_EMAIL_NOT_PROVIDED = "Please provide valid email";
 	String PRODUCT_NOT_FOUND = "Product Object not found";
+	String PRODUCT_ALREADY_EXISTS = "Product already exists" ;
 }

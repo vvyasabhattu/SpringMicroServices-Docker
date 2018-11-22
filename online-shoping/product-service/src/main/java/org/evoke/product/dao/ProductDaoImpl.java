@@ -52,6 +52,7 @@ public class ProductDaoImpl implements ProductDao {
 	Product product = null;
 	ProductResponseList prl = null;
 	Product product_db = null;
+	int cnt = 0;
 
     @Override
 	public ProductResponseList addProduct(Product product) {
@@ -185,6 +186,36 @@ public class ProductDaoImpl implements ProductDao {
 		ProductResponseList prl =new ProductResponseList();
 		prl.setProductResponse(productResList);
 	    return prl;
+	}
+	
+	public ProductResponseList updateProductImgPath(int id,String path) {
+		
+		product_db = session.get(Product.class, id);
+		product_db.setImg_path(path);
+		
+		session.clear();
+		session.update(product_db);
+		session.flush();
+		
+		List<Product> productList = new ArrayList<Product>();
+		productList.add(product_db);
+		
+		return MapProductResponse(productList);
+		
+	}
+	
+	public boolean IsProductExists(String productName) {
+		
+		List<Product> productList =  session.createCriteria(Product.class).list();
+
+		for(cnt=0;cnt<productList.size();cnt++) {
+			
+			if(productList.get(cnt).getProduct_name().equals(productName))
+				return true;
+		}
+		
+		return false;
+		
 	}
 
 }

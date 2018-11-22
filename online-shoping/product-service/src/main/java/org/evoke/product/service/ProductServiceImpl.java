@@ -80,11 +80,16 @@ public class ProductServiceImpl implements ProductService {
 		
 		 return productDao.getProductsByCategoryId(id);
 	}
+	 
+	 
+	 public ProductResponseList updateProductImgPath(int id,String path) {
+		 return productDao.updateProductImgPath(id,path);
+	 }
 
-	/*@Override
-	public boolean CheckProductName(String productName) {
-		return productDao.CheckProductName(productName);
-	}*/
+	@Override
+	public boolean IsProductExists(String productName) {
+		return productDao.IsProductExists(productName);
+	}
 	  
 	
 }

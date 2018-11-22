@@ -23,6 +23,6 @@ public interface ProductService {
 	 
 	 public ProductResponseList getProductsByCategoryId(int id);
 	 
-	// public boolean CheckProductName(String productName);
+	public boolean IsProductExists(String productName);
 	 
 }
