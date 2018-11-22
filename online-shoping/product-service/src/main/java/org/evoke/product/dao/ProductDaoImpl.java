@@ -92,21 +92,25 @@ public class ProductDaoImpl implements ProductDao {
 				return productResponseList;
 		 }
 		 else {
-		 product_db.setCategory(product.getCategory());
-		product_db.setBrand(product.getBrand());
-		product_db.setDescription(product.getDescription());
-		product_db.setPrice(product.getPrice());
-		product_db.setImg_path(product.getImg_path());
-		product_db.setProduct_name(product.getProduct_name());
+			 if(product.getCategory()!=null)
+		        product_db.setCategory(product.getCategory());
+			 if(product.getBrand()!=null)
+		       product_db.setBrand(product.getBrand());
+			 if(product.getDescription()!=null)
+		        product_db.setDescription(product.getDescription());
+			 if(product.getPrice()!=0.0)
+				 product_db.setPrice(product.getPrice());
+			 if(product.getProduct_name()!=null)
+				 product_db.setProduct_name(product.getProduct_name());
 		
-		session.clear();
-		session.update(product_db);
-		session.flush();
-		
-		List<Product> productList = new ArrayList<Product>() ;
-		productList.add(product_db);
-		
-		return MapProductResponse(productList);
+				session.clear();
+				session.update(product_db);
+				session.flush();
+				
+				List<Product> productList = new ArrayList<Product>() ;
+				productList.add(product_db);
+				
+				return MapProductResponse(productList);
 		 }
 	    
 	}
@@ -126,6 +130,8 @@ public class ProductDaoImpl implements ProductDao {
 				 product_db.setIs_deleted("yes");
 				 session.clear();
 				 session.update(product_db);
+				 session.flush();
+				 
 				 List<Product> productList = new ArrayList<Product>() ;
 					productList.add(product_db);
 					

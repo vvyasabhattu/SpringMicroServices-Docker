@@ -84,7 +84,7 @@ public class ProductController {
 		return response;
 	}
 
-	@PostMapping
+	@PostMapping("/add")
 	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
 		
 		try {
@@ -97,7 +97,6 @@ public class ProductController {
 
 				return response;
 			}
-			
 			
 			User user =pRequest.getProduct().getUser();			
 			LoginRequest loginRequest = new LoginRequest();
@@ -133,7 +132,7 @@ public class ProductController {
 	}
 	
 	
-	@PostMapping("/addProductImg/{product_id}")
+	@PostMapping("/uploadImg/{product_id}")
 	public ProductResponseList addProductImg(@RequestBody MultipartFile img,@PathVariable("product_id") int product_id) {
 
 		String UPLOADED_FOLDER =  servletContext.getContextPath();
@@ -174,7 +173,7 @@ public class ProductController {
 		
 	}
 
-	@PutMapping
+	@PutMapping("update")
 	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
 
 		UserResponse userResponse = null;
@@ -219,7 +218,7 @@ public class ProductController {
 		return response;
 	}
 	
-	@DeleteMapping
+	@PutMapping("/delete")
 	public @ResponseBody ProductResponseList delete(@RequestBody ProductRequest pRequest){
 		
 		try {
