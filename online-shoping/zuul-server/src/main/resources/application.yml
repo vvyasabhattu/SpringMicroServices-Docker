@@ -1,10 +1,33 @@
+spring:
+  application:
+    name: zuul-server
+    
 server:
   port: 9090
+              
+              
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+
+ribbon:
+  maxAutoRetries: 1
+  MaxAutoRetriesNextServer: 2
+  ConnectTimeout: 100000000
+  ReadTimeout: 10000000
+  eureka:
+    enabled: true
+    
+    
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.99.100:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
 zuul:
   #Service will be mapped under the /api URI
@@ -15,15 +38,12 @@ zuul:
     test:
       path: /redirect/**
       url: http://google.com
-    customer-by-address:
-      path: /user-by-address/**
-      url: http://192.168.99.100:9098
-    customer-by-service:
+    user-by-service:
       path: /user-by-service/**
       serviceId: USER-SERVICE
+    product-by-service:
+      path: /product-by-service/**
+      serviceId: PRODUCT-SERVICE
     static:
       path: /static/**
 
-spring:
-  application:
-    name: zuul-server

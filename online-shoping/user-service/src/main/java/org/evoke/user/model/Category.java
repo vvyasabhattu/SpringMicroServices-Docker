@@ -1,4 +1,4 @@
-package org.evoke.product.model;
+package org.evoke.user.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,8 +28,8 @@ public class Category implements Serializable {
 	
 	/*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "category_id", nullable = false)*/
-	@OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
 	@JsonIgnore
+	@OneToMany(mappedBy = "category")
 	private List<Product> productLst;
 	
 

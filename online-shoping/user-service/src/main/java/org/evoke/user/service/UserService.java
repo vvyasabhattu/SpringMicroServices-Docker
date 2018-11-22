@@ -6,42 +6,42 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.evoke.user.model.BaseResponse;
-import org.evoke.user.model.UserDetails;
+import org.evoke.user.model.User;
 import org.evoke.user.web.error.UserAlreadyExistException;
 
 
 @Transactional
 public interface UserService {
 	
-	BaseResponse registerUser(UserDetails accountDto) throws UserAlreadyExistException;
+	BaseResponse registerUser(User accountDto) throws UserAlreadyExistException;
 
 	BaseResponse getUser(int userId);
 
-    void saveRegisteredUser(UserDetails user);
+    void saveRegisteredUser(User user);
 
-    void deleteUser(UserDetails user);
+    void deleteUser(User user);
 
-    void createVerificationTokenForUser(UserDetails user, String token);
+    void createVerificationTokenForUser(User user, String token);
 
-    void createPasswordResetTokenForUser(UserDetails user, String token);
+    void createPasswordResetTokenForUser(User user, String token);
 
-    UserDetails findUserByEmail(String email);
+    User findUserByEmail(String email);
 
     //PasswordResetToken getPasswordResetToken(String token);
 
-    UserDetails getUserByPasswordResetToken(String token);
+    User getUserByPasswordResetToken(String token);
 
-    //Optional<UserUserDetails> getUserByID(long id);
+    //Optional<UserUser> getUserByID(long id);
 
-    void changeUserPassword(UserDetails user, String password);
+    void changeUserPassword(User user, String password);
 
-    boolean checkIfValidOldPassword(UserDetails user, String password);
+    boolean checkIfValidOldPassword(User user, String password);
 
     String validateVerificationToken(String token);
 
-    String generateQRUrl(UserDetails user) throws UnsupportedEncodingException;
+    String generateQRUrl(User user) throws UnsupportedEncodingException;
 
-    UserDetails updateUser2FA(boolean use2FA);
+    User updateUser2FA(boolean use2FA);
 
     List<String> getUsersFromSessionRegistry();
 

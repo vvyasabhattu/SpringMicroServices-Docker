@@ -1,4 +1,4 @@
-package org.evoke.user.model;
+package org.evoke.product.model;
 
 public class LoginRequest extends BaseRequest{
 

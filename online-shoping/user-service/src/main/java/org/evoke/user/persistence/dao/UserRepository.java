@@ -1,19 +1,19 @@
 package org.evoke.user.persistence.dao;
 
-import org.evoke.user.model.UserDetails;
+import org.evoke.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface UserRepository extends JpaRepository<UserDetails, Long>{
+public interface UserRepository extends JpaRepository<User, Long>{
 	
-	UserDetails findByEmail(String email);
+	User findByEmail(String email);
 	
-	@Query(value = "SELECT password FROM userdetails u WHERE u.email= ?1" , 
+	@Query(value = "SELECT password FROM user u WHERE u.email= ?1" , 
 			nativeQuery = true)
 	String getUserPassword(String email);
 	
-	@Query(value = "SELECT * FROM userdetails u WHERE u.email = ?1",
+	@Query(value = "SELECT u.* FROM user u WHERE u.email = ?1",
 			nativeQuery = true)
-	UserDetails getUser(String email);
+	User getUser(String email);
 
 }

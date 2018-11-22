@@ -5,7 +5,7 @@ import java.util.List;
 import org.evoke.product.model.Address;
 import org.evoke.product.model.Category;
 import org.evoke.product.model.Product;
-import org.evoke.product.model.UserDetails;
+import org.evoke.product.model.User;
 
 public class AddressMapper {
 

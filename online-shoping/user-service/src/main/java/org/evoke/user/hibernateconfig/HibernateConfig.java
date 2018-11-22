@@ -2,118 +2,80 @@ package org.evoke.user.hibernateconfig;
 
 import java.util.Properties;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-//@EnableJpaRepositories(basePackages ="org.evoke.userapplication")
+// @EnableJpaRepositories(basePackages ="org.evoke.userapplication")
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 public class HibernateConfig {
 
-    @Autowired
-    private Environment env;
-    
-  //1.2.3.4	
-  /*	@Value("${mongodb.url}")
-  	private String mongodbUrl;
+	@Autowired
+	private Environment env;
 
-  	//hello
-  	@Value("${jdbc.url}")
-  	private String url;*/
-
-
-
-    @Bean
+	@Bean
     public SessionFactory getSessionFactory(){
         LocalSessionFactoryBuilder sessionFactory = new LocalSessionFactoryBuilder(dataSource());
         sessionFactory.scanPackages("org.evoke.user.model").addProperties(hibernateProperties());
        
         return sessionFactory.buildSessionFactory();
     }
-    
-    @Bean
-    public DataSource dataSource() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("datasource.driver-class-name"));
-        dataSource.setUrl(env.getProperty("datasource.url"));
-        dataSource.setUsername(env.getProperty("datasource.username"));
-        dataSource.setPassword(env.getProperty("datasource.password"));
+	
+	 @Bean
+	    public Session getSession() {
+	    	try {
+	    	return getSessionFactory().getCurrentSession();
+	    	}catch(HibernateException ex) {
+	    		return getSessionFactory().openSession();
+	    	}
+	    }
+	@Bean
+	public DataSource dataSource() {
+		final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName(env.getProperty("datasource.driver-class-name"));
+		dataSource.setUrl(env.getProperty("datasource.url"));
+		dataSource.setUsername(env.getProperty("datasource.username"));
+		dataSource.setPassword(env.getProperty("datasource.password"));
 
-        return dataSource;
-    }
-    
-    @Bean
-    public Properties hibernateProperties() {
-        Properties properties = new Properties();
-        properties.put("hibernate.dialect","org.hibernate.dialect.MySQL5Dialect");
-        properties.put("hibernate.show_sql", true);
-        properties.put("hibernate.format_sql", true);
-        properties.put("hibernate.hbm2ddl.auto","create");
-        properties.put("hibernate.sql", "debug");
-        return properties;
-    }
-    
-    @Bean
-    public Session getSession() {
-    	try {
-    	return getSessionFactory().getCurrentSession();
-    	}catch(HibernateException ex) {
-    		return getSessionFactory().openSession();
-    	}
-    }
-    
-    @Bean
-    public HibernateTransactionManager getHibernateTransactionManager() {
-    	return new HibernateTransactionManager(getSessionFactory());
-    }
-    
-    
-/*    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[] { "org.evoke.userapplication.model" });
-        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        em.setJpaProperties(additionalProperties());
-        return em;
-    }
+		return dataSource;
+	}
 
-    @Bean
-    JpaTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory);
-        return transactionManager;
-    }
+	@Bean
+	public Properties hibernateProperties() {
+		Properties properties = new Properties();
+		properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+		properties.put("hibernate.show_sql", true);
+		properties.put("hibernate.format_sql", true);
+		properties.put("hibernate.hbm2ddl.auto", "update");
+		properties.put("hibernate.sql", "debug");
+		return properties;
+	}
 
-    final Properties additionalProperties() {
-        final Properties hibernateProperties = new Properties();
+	@Bean("transactionManager")
+	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+		HibernateTransactionManager htm = new HibernateTransactionManager();
+		htm.setSessionFactory(sessionFactory);
+		return htm;
+	}
 
-        hibernateProperties.setProperty("hibernate.ddl-auto", env.getProperty("hibernate.ddl-auto"));
-        hibernateProperties.setProperty("jpa.database-platform", env.getProperty("jpa.database-platform"));
-        hibernateProperties.setProperty("jpa.show_sql", env.getProperty("jpa.show_sql"));
-
-        return hibernateProperties;
-    }*/
+	@Bean
+	public HibernateTemplate getHibernateTemplate(SessionFactory sessionFactory) {
+		HibernateTemplate hibernateTemplate = new HibernateTemplate(sessionFactory);
+		return hibernateTemplate;
+	}
 
 }

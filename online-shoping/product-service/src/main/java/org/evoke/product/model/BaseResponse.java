@@ -1,8 +1,8 @@
-package org.evoke.user.model;
+package org.evoke.product.model;
 
 import java.util.Map;
 
-import org.evoke.user.web.error.ErrorMessage;
+import org.evoke.product.error.ErrorMessage;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,5 +24,6 @@ public class BaseResponse extends ErrorMessage{
 		this.response = response;
 	}
 		
+	
 	
 }

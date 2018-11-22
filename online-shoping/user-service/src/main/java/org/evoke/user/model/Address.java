@@ -9,7 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 @Entity
 public class Address  extends AbstractTimestampEntity implements Serializable {
 	
@@ -22,7 +25,6 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	@Id
 	@GeneratedValue
 	private int id;
-	@JsonIgnore
 	@Column
 	private String city;
 	
@@ -35,6 +37,11 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	@Column
 	private int pincode;
 
+	@Column
+	private String addrLine1;
+	@Column
+	private String addrLine2;
+	
 	public int getId() {
 		return id;
 	}
@@ -65,5 +72,23 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	public void setPincode(int pincode) {
 		this.pincode = pincode;
 	}
+	public String getAddrLine1() {
+		return addrLine1;
+	}
+	public void setAddrLine1(String addrLine1) {
+		this.addrLine1 = addrLine1;
+	}
+	public String getAddrLine2() {
+		return addrLine2;
+	}
+	public void setAddrLine2(String addrLine2) {
+		this.addrLine2 = addrLine2;
+	}
+	@Override
+	public String toString() {
+		return "Address [id=" + id + ", city=" + city + ", state=" + state + ", country=" + country + ", pincode="
+				+ pincode + ", addrLine1=" + addrLine1 + ", addrLine2=" + addrLine2 + "]";
+	}
+	
 	
 }

@@ -1,25 +1,36 @@
-package org.evoke.product.model;
+package org.evoke.user.model;
 
-import java.util.List;
+import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicUpdate;
 
-public class ProductResponse {
+@Entity
+@Table(name = "product")
+@DynamicUpdate
+public class Product extends AbstractTimestampEntity implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int product_id;
 	
+	@Column(unique = true)
 	@NotNull
 	private String product_name;
-	
-	private int seller_id;
 	
 	private String img_path;
 	
@@ -27,6 +38,11 @@ public class ProductResponse {
 	private double price ;
 	
 	private String description;
+	
+	//private String specification;
+	
+	//private String reviews;
+	private String is_deleted;
 	
 	/**
 	 * @return the is_deleted
@@ -42,24 +58,9 @@ public class ProductResponse {
 		this.is_deleted = is_deleted;
 	}
 
-	private String is_deleted;
-	
-	//private String specification;
-	
-	//private String reviews;
-	
 	/**
 	 * @return the brand
 	 */
-
-	private String brand;
-	
-	
-	@ManyToOne
-	@JoinColumn(name="category_id")
-	private Category category; 
-
-	
 	public String getBrand() {
 		return brand;
 	}
@@ -70,6 +71,17 @@ public class ProductResponse {
 	public void setBrand(String brand) {
 		this.brand = brand;
 	}
+
+	private String brand;
+	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private User user;
+	
+	@ManyToOne
+	@JoinColumn(name="category_id")
+	private Category category; 
+
 
 	public int getProduct_id() {
 		return product_id;
@@ -112,6 +124,13 @@ public class ProductResponse {
 		this.description = description;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	public Category getCategory() {
 		return category;
@@ -121,32 +140,14 @@ public class ProductResponse {
 		this.category = category;
 	}
 
-	/**
-	 * @return the seller_id
-	 */
-	public int getSeller_id() {
-		return seller_id;
-	}
-
-	/**
-	 * @param seller_id the seller_id to set
-	 */
-	public void setSeller_id(int seller_id) {
-		this.seller_id = seller_id;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "ProductResponse [product_id=" + product_id + ", product_name=" + product_name + ", seller_id="
-				+ seller_id + ", img_path=" + img_path + ", price=" + price + ", description=" + description
-				+ ", brand=" + brand + "]";
+		return "Product [product_id=" + product_id + ", product_name=" + product_name + ", img_path=" + img_path
+				+ ", price=" + price + ", description=" + description + ", is_deleted=" + is_deleted + ", brand="
+				+ brand + "]";
 	}
-	
 
-
-	
-	
 }

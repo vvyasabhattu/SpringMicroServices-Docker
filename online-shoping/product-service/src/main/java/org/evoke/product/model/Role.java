@@ -1,4 +1,4 @@
-package org.evoke.user.model;
+package org.evoke.product.model;
 
 import java.io.Serializable;
 
@@ -20,14 +20,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "role")
-public class Role extends AbstractTimestampEntity implements Serializable {
+public class Role extends AbstractTimestampEntity implements Serializable{
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Id
+    @Id
     @GeneratedValue
     private Long id;
 
@@ -42,6 +37,7 @@ public class Role extends AbstractTimestampEntity implements Serializable {
     }
 
    
+
 	public Long getId() {
 		return id;
 	}
