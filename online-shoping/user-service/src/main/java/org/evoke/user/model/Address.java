@@ -5,10 +5,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 //import javax.persistence.ForeignKey;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.DynamicInsert;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -23,8 +27,9 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	
 	@Column
 	private String city;
 	
@@ -42,6 +47,21 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	@Column
 	private String addrLine2;
 	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	User user;
+	
+//	@ManyToOne
+//	@JoinColumn(name="user_id", nullable=false,insertable = false, updatable = false)
+//	User user;
+	
+		
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	public int getId() {
 		return id;
 	}

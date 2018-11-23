@@ -7,6 +7,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -34,10 +36,22 @@ public class Role extends AbstractTimestampEntity implements Serializable {
     @NotNull
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
+//    
+//    @ManyToOne
+//	@JoinColumn(name="user_id")
+//	User user;
 
     public Role() {}
 
-    public Role(RoleEnum role) {
+//    public User getUser() {
+//		return user;
+//	}
+//
+//	public void setUser(User user) {
+//		this.user = user;
+//	}
+
+	public Role(RoleEnum role) {
         this.role = role;
     }
 

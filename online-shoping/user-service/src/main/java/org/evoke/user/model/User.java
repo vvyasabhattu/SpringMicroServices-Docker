@@ -60,20 +60,34 @@ public class User extends AbstractTimestampEntity implements Serializable {
 
 
 	//@NotBlank(message = "Please enter password!")
+	@Column(updatable = false)
 	private String password;
 
 	//@JsonIgnore
-	@NotNull
+	//@NotNull
 	@Size(min = 1, max = 8)
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id", nullable = false)
 	private List<Role> roleLst;
 
-	//@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "user_id", nullable = false)
+//	@JsonIgnore
+//	@OneToMany(mappedBy="user",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//	//@JoinColumn(name = "user", nullable = false)
+//	private List<Role> roleLst;
+	
+	
+	@JsonIgnore
+	@OneToMany(mappedBy="user",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	//@JoinColumn(name = "user", nullable = false)
 	private List<Address> addressLst;
-
+	
+//	@JsonIgnore
+//	@OneToMany(mappedBy="user")
+//	//@JoinColumn(name = "user", nullable = false)
+//	private List<Address> addressLst;
+	
+	
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<Product> productLst;
