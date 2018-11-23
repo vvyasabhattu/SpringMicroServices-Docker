@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.User;
 import org.evoke.user.web.error.UserAlreadyExistException;
@@ -15,7 +16,7 @@ public interface UserService {
 	
 	BaseResponse registerUser(User accountDto) throws UserAlreadyExistException;
 
-	BaseResponse getUser(int userId);
+	BaseResponse getUser(int userId);	
 
     void saveRegisteredUser(User user);
 
@@ -45,4 +46,6 @@ public interface UserService {
 
     List<String> getUsersFromSessionRegistry();
 
+    BaseResponse updateUser(User user);
+    BaseResponse insertAddress(AddressReq adr);
 }

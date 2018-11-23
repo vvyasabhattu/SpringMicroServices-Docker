@@ -4,9 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EnumType;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
+import org.evoke.user.model.Address;
+import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.Role;
 import org.evoke.user.model.RoleEnum;
 import org.evoke.user.model.User;
@@ -16,6 +19,7 @@ import org.evoke.user.web.error.ErrorCode;
 import org.evoke.user.web.error.ErrorDescription;
 import org.evoke.user.web.error.ErrorType;
 import org.evoke.util.DateUtil;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,8 @@ import org.springframework.stereotype.Service;
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
 
+	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -39,6 +45,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	Session session;
+	
+	@Autowired
+	UserRepository userRepo;
+
 
 	@Override
 	public UserResponse registerUser(final User user) {
@@ -52,7 +62,6 @@ public class UserServiceImpl implements UserService {
 			response.setErrorCode(ErrorCode.PASSWORD_NOT_VALID);
 			response.setErrorDesc(ErrorDescription.PASSWORD_NOT_VALID);
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-
 			return response;
 		}
 		
@@ -97,9 +106,9 @@ public class UserServiceImpl implements UserService {
 				newuser.getAddressLst().get(0).setUpdatedUser(user.getFirstName());
 				
 			}
-			session.save(newuser);
-			//session.flush();
-			//session.evict(newuser);
+			session.saveOrUpdate(newuser);
+			session.flush();
+			session.evict(newuser);
 			response = new UserResponse();
 			lstUser = new ArrayList<User>();
 			newuser.setPassword(null);
@@ -130,7 +139,6 @@ public class UserServiceImpl implements UserService {
 				if (null != list && list.size() > 0) {
 					user = list.get(0);
 				}
-				// user = repository.getUser(user.getEmail());
 				if (null != user) {
 					user.setPassword(null);
 					userLst.add(user);
@@ -188,7 +196,7 @@ public class UserServiceImpl implements UserService {
 
 			if (null != userDetails) {
 				userLst = new ArrayList<User>();
-				userDetails.setPassword(null);
+				userDetails.setPassword(userDetails.getPassword());
 				userLst.add( userDetails);
 				response = new UserResponse();
 				response.setUserLst(userLst);
@@ -221,6 +229,87 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public UserResponse updateUser(User user) {
+
+		UserResponse response = null;
+		List<User> lstUser = null;
+
+		try {
+			session.clear();
+
+			user.setCreatedUser(user.getFirstName());
+			user.setUpdatedUser(user.getFirstName());
+			user.setCreatedDate(DateUtil.getDDMMYYDate());
+			user.setUpdatedDate(DateUtil.getDDMMYYDate());
+
+			if (user.getRoleLst() != null && user.getRoleLst().size() > 0) {
+				for (Role role : user.getRoleLst()) {
+					List<Role> roleLst = new ArrayList<Role>();
+					role = new Role(role.getRole());
+					role.setCreatedUser(user.getFirstName());
+					role.setUpdatedUser(user.getFirstName());
+					role.setCreatedDate(DateUtil.getDDMMYYDate());
+					role.setUpdatedDate(DateUtil.getDDMMYYDate());
+					roleLst.add(role);
+					user.setRoleLst(roleLst);
+				}
+			}
+
+			if (user.getAddressLst() != null && user.getAddressLst().size() > 0) {
+				for (Address adr : user.getAddressLst()) {
+					adr.setCreatedUser(user.getFirstName());
+					adr.setUpdatedUser(user.getFirstName());
+					adr.setCreatedDate(DateUtil.getDDMMYYDate());
+					adr.setUpdatedDate(DateUtil.getDDMMYYDate());
+				}
+			}
+			session.update(user);
+			session.flush();
+			System.out.println("User Updated successfully.....!!");
+			response = new UserResponse();
+			lstUser = new ArrayList<User>();
+			lstUser.add(user);
+			response.setUserLst(lstUser);
+
+		} catch (HibernateException e) {
+			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+		}
+		return response;
+	}
+
+	public UserResponse insertAddress(AddressReq adrReq) {
+
+		UserResponse response = null;
+		List<User> lstUser = null;
+
+		try {
+			session.clear();
+			adrReq.getAddress().setCreatedUser("null");
+			adrReq.getAddress().setUpdatedUser("null");
+			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
+			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
+			session.save(adrReq.getAddress());
+
+			session.flush();
+			System.out.println("User Updated successfully.....!!");
+			response = new UserResponse();
+			lstUser = new ArrayList<User>();
+			lstUser.add(adrReq.getAddress().getUser());
+			response.setUserLst(lstUser);
+
+		} catch (HibernateException e) {
+			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+		}
+		return response;
+	}
+	
+	
+
+	@Override
 	public void saveRegisteredUser(User user) {
 		// TODO Auto-generated method stub
 
@@ -228,8 +317,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(User user) {
-		// TODO Auto-generated method stub
-
+		try {
+			session.clear();
+			session.delete(session.get(User.class, user.getId()));
+			session.flush();
+		} catch (HibernateException e) {
+				System.out.println("Exception while deleteing user(Hibernate exception)"+ e);
+		}
 	}
 
 	@Override
