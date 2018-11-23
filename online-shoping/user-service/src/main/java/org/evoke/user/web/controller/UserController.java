@@ -18,6 +18,7 @@
 package org.evoke.user.web.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.LoginRequest;
 import org.evoke.user.model.UserResponse;
 import org.evoke.user.service.UserServiceImpl;
@@ -126,5 +127,51 @@ public class UserController {
 		return response;
 
 	}
+	
+	@PostMapping(value = "/update")
+	public UserResponse updateUser(@RequestBody LoginRequest request) {
+		UserResponse response = null;
 
+		if (null != request && null != request.getUser()) {
+
+			response = userService.updateUser(request.getUser());
+		} else {
+
+			response = new UserResponse();
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+
+		return response;
+
+	}
+	
+	@PostMapping(value = "/addAddress")
+	public UserResponse insertUser(@RequestBody AddressReq adrReq) {
+		UserResponse  response = null;
+
+		if (null != adrReq && null != adrReq.getAddress().getUser()) {
+			response = userService.insertAddress(adrReq);
+		}
+		else {
+			response = new UserResponse();
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+			return response;
+	}
+
+	@PostMapping(value = "/delete")
+	public void deleteUser(@RequestBody LoginRequest request) {
+		try {
+			userService.deleteUser(request.getUser());
+		} catch (Exception e) {
+			System.out.println("Exception while delete user" + e);
+		}
+
+	}
 }
