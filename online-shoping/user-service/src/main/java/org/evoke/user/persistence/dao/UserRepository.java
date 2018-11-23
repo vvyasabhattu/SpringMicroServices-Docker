@@ -11,9 +11,14 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	@Query(value = "SELECT password FROM user u WHERE u.email= ?1" , 
 			nativeQuery = true)
 	String getUserPassword(String email);
+
 	
 	@Query(value = "SELECT u.* FROM user u WHERE u.email = ?1",
 			nativeQuery = true)
 	User getUser(String email);
+	
+	User findOne(Long id);
+	
+	void delete(User user);
 
 }
