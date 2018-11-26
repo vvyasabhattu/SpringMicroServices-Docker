@@ -66,7 +66,7 @@ public class ProductDaoImpl implements ProductDao {
 		
 		int id = (int) session.save(product);
 		//session.flush();
-		//session.evict(product);
+		session.evict(product);
 		
 		product.setProduct_id(id);
 		List<Product> productList = new ArrayList<Product>() ;
@@ -216,6 +216,7 @@ public class ProductDaoImpl implements ProductDao {
 
 		for(cnt=0;cnt<productList.size();cnt++) {
 			
+			System.out.println(productList.get(cnt).getProduct_name());
 			if(productList.get(cnt).getProduct_name().equals(productName))
 				return true;
 		}

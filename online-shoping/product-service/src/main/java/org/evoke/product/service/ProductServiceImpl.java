@@ -15,18 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 @Service
-@RequestScope
 public class ProductServiceImpl implements ProductService {
 		
 	@Autowired
     private ProductDaoImpl productDao;
 	
-	private Product product;
-	
-	 @PostConstruct
-	 public void init() {
-	    	product = new Product();
-	 }
 	  
 	 @Override
 	 public ProductResponseList addProduct(ProductRequest pr) {

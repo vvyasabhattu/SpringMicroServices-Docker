@@ -1,26 +1,34 @@
 package org.evoke.product.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
 
-import org.evoke.product.dao.ProductDao;
+import org.apache.commons.io.FileUtils;
 import org.evoke.product.error.ErrorCode;
 import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
 import org.evoke.product.model.LoginRequest;
 import org.evoke.product.model.ProductRequest;
 import org.evoke.product.model.ProductResponseList;
+import org.evoke.product.model.Role;
 import org.evoke.product.model.User;
 import org.evoke.product.model.UserResponse;
 import org.evoke.product.service.ProductServiceImpl;
 import org.evoke.product.util.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/product")
-@RequestScope
 public class ProductController {
 
 	@Autowired
@@ -50,8 +57,6 @@ public class ProductController {
 	@Autowired
     private ServletContext servletContext;
 	
-	ProductResponseList response = null ;
-	UserResponse userResponse = null;
 	String sep = File.separator;
 
 	@GetMapping("/check")
@@ -87,14 +92,16 @@ public class ProductController {
 	@PostMapping("/add")
 	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
 		
+		ProductResponseList response = new ProductResponseList();
+		UserResponse userResponse = null; 
+		boolean roleCheck = false;
+		
 		try {
 			
 			if (IsProductExists(pRequest.getProduct().getProduct_name())) {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.PRODUCT_ALREADY_EXISTS);
 				response.setErrorDesc(ErrorDescription.PRODUCT_ALREADY_EXISTS);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-
 				return response;
 			}
 			
@@ -105,14 +112,28 @@ public class ProductController {
 			
 			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
 				
+				List<Role> roleLst = userResponse.getUserLst().get(0).getRoleLst();
 				
-				//if(userResponse.getUserLst().get(0).getRoleLst().)
+				for(int i=0;i<roleLst.size();i++) {
+					System.out.println("role: "+roleLst.get(i).getRole().getDescription());
+					if(roleLst.get(i).getRole().getDescription().equals("Seller"))
+						roleCheck = true;
+				}
+				
+				if(roleCheck==true) {
 				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
 				response = ps.addProduct(pRequest);
+				}
+				else {
+					response.setErrorCode(ErrorCode.INVALID_USER);
+					response.setErrorDesc(ErrorDescription.INVALID_USER);
+					response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+					return response;
+				}
+				
 			}
 			
 			else {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
@@ -121,7 +142,6 @@ public class ProductController {
 			
 			
 		} catch (Exception e) {
-			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -133,55 +153,62 @@ public class ProductController {
 	
 	
 	@PostMapping("/uploadImg/{product_id}")
+	//@Consumes(MediaType.mul)
 	public ProductResponseList addProductImg(@RequestBody MultipartFile img,@PathVariable("product_id") int product_id) {
 
-		String UPLOADED_FOLDER =  servletContext.getContextPath();
+		ProductResponseList response = new ProductResponseList();
 		
-		//  String UPLOADED_FOLDER = servletContext.getRealPath(sep)+"images"+sep;
-		  
-		/*  File theDir = new File(UPLOADED_FOLDER);
-		  File file = null;
+		  String UPLOADED_FOLDER = null;
+		try {
+			UPLOADED_FOLDER = getPath();
+		} catch (UnsupportedEncodingException e) {
+			response.setErrorCode(ErrorCode.PATH_ENCODING_ERROR);
+			response.setErrorDesc(ErrorDescription.PATH_ENCODING_ERROR);
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			return response;
+		}
+		
+		  UPLOADED_FOLDER 	=  UPLOADED_FOLDER+sep+"images"+sep;
+		  File theDir = new File(UPLOADED_FOLDER);
+		  File destFile = null;
+		  File srcFile = null;
 
 		// if the directory does not exist, create it
 		   if (!theDir.exists()) {
-		    System.out.println("creating directory: " + theDir.getName());
-		    boolean result = false;
 		        theDir.mkdir();
-		   }*/
+		   }
 		   
 		  try {
 	        	if(img!=null) {
 		            // Get the file and save it somewhere
-		        	//file = new File(UPLOADED_FOLDER+ product_id + "_"+ img.getOriginalFilename());
-		        	
-		        	//if(!file.exists()) {
-		            byte[] bytes = img.getBytes();
-		            Path path = Paths.get(UPLOADED_FOLDER + product_id + "_"+ img.getOriginalFilename());
-		            Files.write(path, bytes);
-		        	//}
-		        	
+		        	destFile = new File(UPLOADED_FOLDER+ product_id + "_"+ img.getOriginalFilename());
+		        	srcFile =  new File(img.getOriginalFilename());
+		        	img.transferTo(srcFile);
+		        			
+		        	if(!destFile.exists()) {
+		             FileUtils.copyFile(srcFile, destFile);
+		        	}
 	        	}
-	        	
-	        	return ps.updateProductImgPath(product_id,product_id + "_"+ img.getOriginalFilename());
-	        	
-	        } catch (IOException e) {
-	        	response = new ProductResponseList();
-				response.setErrorCode(100);
+		  } catch (IOException e) {
+				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
 				response.setErrorDesc(e.getMessage());
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-				return response;	        }
-		
+				return response;	        
+			}
+	        
+		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+img.getOriginalFilename());
 	}
+	
 
 	@PutMapping("update")
 	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
 
-		UserResponse userResponse = null;
+		ProductResponseList response = new ProductResponseList();
+		UserResponse userResponse = null; 
 		
 		try {
 			
 			if (IsProductExists(pRequest.getProduct().getProduct_name())) {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.PRODUCT_ALREADY_EXISTS);
 				response.setErrorDesc(ErrorDescription.PRODUCT_ALREADY_EXISTS);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -200,7 +227,6 @@ public class ProductController {
 			}
 			
 			else {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
@@ -208,7 +234,6 @@ public class ProductController {
 			}
 			
 		} catch (Exception e) {
-			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -221,11 +246,13 @@ public class ProductController {
 	@PutMapping("/delete")
 	public @ResponseBody ProductResponseList delete(@RequestBody ProductRequest pRequest){
 		
+		ProductResponseList response = new ProductResponseList();
+		UserResponse userResponse = null; 
+		
 		try {
 				response = ps.deleteProduct(pRequest);
 			
 		} catch (Exception e) {
-			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -239,11 +266,13 @@ public class ProductController {
 
 	@GetMapping("/all")
 	public @ResponseBody ProductResponseList getProducts() {
+		
+		ProductResponseList response = new ProductResponseList();
+
 		try {
 			return ps.getProducts();
 			}
 			catch(Exception e) {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
 				response.setErrorDesc(e.getMessage());
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -253,11 +282,13 @@ public class ProductController {
 
 	@GetMapping("{product_id}")
 	public @ResponseBody ProductResponseList getProductById(@PathVariable("product_id") int product_id) {
+		
+		ProductResponseList response = new ProductResponseList();
+		
 		try {
 		   return ps.getProductById(product_id);
 		}
 		catch(Exception e) {
-			response = new ProductResponseList();
 			response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -275,11 +306,13 @@ public class ProductController {
 	
 	@GetMapping("byCategory/{category_id}")
 	public @ResponseBody ProductResponseList getProductsByCategoryId(@PathVariable("category_id") int category_id) {
-		    try {
+		    
+		ProductResponseList response = new ProductResponseList();
+
+		try {
 			return ps.getProductsByCategoryId(category_id);
 			}
 			catch(Exception e) {
-				response = new ProductResponseList();
 				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
 				response.setErrorDesc(e.getMessage());
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -294,6 +327,15 @@ public class ProductController {
 		
 	}
 	
+	public String getPath() throws UnsupportedEncodingException {
+		String path = this.getClass().getClassLoader().getResource("").getPath();
+		String fullPath = URLDecoder.decode(path, "UTF-8");
+		String pathArr[] = fullPath.split("/target/classes/");
+		System.out.println(fullPath);
+		System.out.println(pathArr[0]);
+		fullPath = pathArr[0];
+		return fullPath;
+		}
 	
 
 }

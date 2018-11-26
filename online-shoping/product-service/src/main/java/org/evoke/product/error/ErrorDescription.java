@@ -11,4 +11,6 @@ public interface ErrorDescription {
 	String USER_EMAIL_NOT_PROVIDED = "Please provide valid email";
 	String PRODUCT_NOT_FOUND = "Product Object not found";
 	String PRODUCT_ALREADY_EXISTS = "Product already exists" ;
+	String INVALID_USER = "Invalid User role ";
+	String PATH_ENCODING_ERROR = "Error in getting web app path";
 }
