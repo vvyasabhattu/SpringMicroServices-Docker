@@ -152,8 +152,8 @@ public class ProductDaoImpl implements ProductDao {
 
 		ProductResponse response =  new ProductResponse();
 		
-		Criteria c = session.createCriteria(Product.class);// ht.find("from Product");
-		List<Product> productList = (List<Product>) c.list();
+		Query query = session.createQuery("from Product where is_deleted='no'");
+		List<Product> productList = (List<Product>) query.list();
 				
 
 		return MapProductResponse(productList);
@@ -183,7 +183,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
 	public ProductResponseList getProductsByCategoryId(int id) {
 		
-    	 Query query = session.createQuery("from Product where category_id=:id");  //get(User.class, id);
+    	 Query query = session.createQuery("from Product where category_id=:id and is_deleted='no'");  //get(User.class, id);
 		 query.setInteger("id", id);
     	 List<Product> productList = query.list() ;
     	 return MapProductResponse(productList);// ud.getProducts();

@@ -105,40 +105,7 @@ public class ProductController {
 				return response;
 			}
 			
-			User user =pRequest.getProduct().getUser();			
-			LoginRequest loginRequest = new LoginRequest();
-			loginRequest.setUser(user);
-			userResponse = userService.getUser(loginRequest);
-			
-			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
-				
-				List<Role> roleLst = userResponse.getUserLst().get(0).getRoleLst();
-				
-				for(int i=0;i<roleLst.size();i++) {
-					System.out.println("role: "+roleLst.get(i).getRole().getDescription());
-					if(roleLst.get(i).getRole().getDescription().equalsIgnoreCase("Seller"))
-						roleCheck = true;
-				}
-				
-				if(roleCheck==true) {
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
-				response = ps.addProduct(pRequest);
-				}
-				else {
-					response.setErrorCode(ErrorCode.INVALID_USER);
-					response.setErrorDesc(ErrorDescription.INVALID_USER);
-					response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
-					return response;
-				}
-				
-			}
-			
-			else {
-				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
-				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
-				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
-				return response;
-			}
+			return checkUserRole(pRequest, "insert");
 			
 			
 		} catch (Exception e) {
@@ -148,7 +115,6 @@ public class ProductController {
 			return response;
 		}
 
-		return response;
 	}
 	
 	
@@ -212,23 +178,7 @@ public class ProductController {
 				return response;
 			}
 			
-			User user =pRequest.getProduct().getUser();			
-			LoginRequest loginRequest = new LoginRequest();
-			loginRequest.setUser(user);
-			userResponse = userService.getUser(loginRequest);
-			
-			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
-
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
-				response = ps.updateProduct(pRequest);
-			}
-			
-			else {
-				response.setErrorCode(ErrorCode.USER_NOT_FOUND);
-				response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
-				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
-				return response;
-			}
+			return checkUserRole(pRequest, "update");
 			
 		} catch (Exception e) {
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
@@ -237,7 +187,7 @@ public class ProductController {
 			return response;
 		}
 
-		return response;
+		
 	}
 	
 	@PutMapping("/delete")
@@ -247,7 +197,7 @@ public class ProductController {
 		UserResponse userResponse = null; 
 		
 		try {
-				response = ps.deleteProduct(pRequest);
+				return checkUserRole(pRequest, "delete");
 			
 		} catch (Exception e) {
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
@@ -256,8 +206,6 @@ public class ProductController {
 			return response;
 		}
 
-		return response;
-		
 	}
 	
 
@@ -333,6 +281,58 @@ public class ProductController {
 		fullPath = pathArr[0];
 		return fullPath;
 		}
+	
+	
+	public ProductResponseList checkUserRole(ProductRequest pRequest,String operation) {
+	
+		UserResponse userResponse= null;
+		ProductResponseList response = new ProductResponseList();
+		boolean roleCheck = false;
+		
+		User user =pRequest.getProduct().getUser();			
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setUser(user);
+		userResponse = userService.getUser(loginRequest);
+		
+		if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
+
+			List<Role> roleLst = userResponse.getUserLst().get(0).getRoleLst();
+			
+			for(int i=0;i<roleLst.size();i++) {
+				System.out.println("role: "+roleLst.get(i).getRole().getDescription());
+				if(roleLst.get(i).getRole().getDescription().equalsIgnoreCase("Seller"))
+					roleCheck = true;
+			}
+			
+			if(roleCheck==true) {
+				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
+				
+				if(operation.equals("insert"))
+				 response = ps.addProduct(pRequest);
+				else if (operation.equals("update"))
+					response=ps.updateProduct(pRequest);
+				else if(operation.equals("delete"))
+					response = ps.deleteProduct(pRequest);
+					
+				return response;
+			}
+			else {
+				response.setErrorCode(ErrorCode.INVALID_USER);
+				response.setErrorDesc(ErrorDescription.INVALID_USER);
+				response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+				return response;
+			}
+			
+		}
+		
+		else {
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+		
+	}	
 	
 
 }
