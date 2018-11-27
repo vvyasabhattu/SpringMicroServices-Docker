@@ -56,7 +56,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
 	public ProductResponseList addProduct(Product product) {
-
+    	
+    	ProductResponseList response = new ProductResponseList();
+    	
 		product.setCreatedUser(product.getUser().getFirstName());
 		product.setUpdatedUser(product.getUser().getFirstName());
 		product.setCreatedDate(DateUtil.getDDMMYYDate());
@@ -68,11 +70,17 @@ public class ProductDaoImpl implements ProductDao {
 		//session.flush();
 		session.evict(product);
 		
+		try {
 		product.setProduct_id(id);
 		List<Product> productList = new ArrayList<Product>() ;
 		productList.add(product);
-		
 		return MapProductResponse(productList);
+		}catch(Exception e) {
+			response.setErrorCode(ErrorCode.PRODUCT_RESPONSE_MAPPING_ERROR);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			return response;
+		}
 		
 	}
 	
@@ -196,17 +204,43 @@ public class ProductDaoImpl implements ProductDao {
 	
 	public ProductResponseList updateProductImgPath(int id,String path) {
 		
+		ProductResponseList response = new ProductResponseList();
+		
 		product_db = session.get(Product.class, id);
-		product_db.setImg_path(path);
 		
-		session.clear();
-		session.update(product_db);
-		session.flush();
+		if(product_db!=null) {
+			product_db.setImg_path(path);
+			
+			try {
+			session.clear();
+			session.update(product_db);
+			session.flush();
+			}catch(Exception e) {
+				response.setErrorCode(ErrorCode.DB_ERROR);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
+			
+			try {
+			List<Product> productList = new ArrayList<Product>();
+			productList.add(product_db);
+			return MapProductResponse(productList);
+			}catch(Exception e) {
+				response.setErrorCode(ErrorCode.PRODUCT_RESPONSE_MAPPING_ERROR);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
+		}
 		
-		List<Product> productList = new ArrayList<Product>();
-		productList.add(product_db);
-		
-		return MapProductResponse(productList);
+		else {
+			response.setErrorCode(ErrorCode.PRODUCT_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.PRODUCT_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;	
+		}
+			
 		
 	}
 	
@@ -217,7 +251,7 @@ public class ProductDaoImpl implements ProductDao {
 		for(cnt=0;cnt<productList.size();cnt++) {
 			
 			System.out.println(productList.get(cnt).getProduct_name());
-			if(productList.get(cnt).getProduct_name().equals(productName))
+			if(productList.get(cnt).getProduct_name().equalsIgnoreCase(productName))
 				return true;
 		}
 		

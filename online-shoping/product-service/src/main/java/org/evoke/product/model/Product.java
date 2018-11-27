@@ -42,7 +42,7 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	//private String specification;
 	
 	//private String reviews;
-	
+	@NotNull
 	private String is_deleted;
 	
 	/**

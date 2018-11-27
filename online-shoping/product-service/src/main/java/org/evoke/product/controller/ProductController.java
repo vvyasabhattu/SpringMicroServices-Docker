@@ -116,7 +116,7 @@ public class ProductController {
 				
 				for(int i=0;i<roleLst.size();i++) {
 					System.out.println("role: "+roleLst.get(i).getRole().getDescription());
-					if(roleLst.get(i).getRole().getDescription().equals("Seller"))
+					if(roleLst.get(i).getRole().getDescription().equalsIgnoreCase("Seller"))
 						roleCheck = true;
 				}
 				
@@ -153,7 +153,6 @@ public class ProductController {
 	
 	
 	@PostMapping("/uploadImg/{product_id}")
-	//@Consumes(MediaType.mul)
 	public ProductResponseList addProductImg(@RequestBody MultipartFile img,@PathVariable("product_id") int product_id) {
 
 		ProductResponseList response = new ProductResponseList();
@@ -185,13 +184,11 @@ public class ProductController {
 		        	srcFile =  new File(img.getOriginalFilename());
 		        	img.transferTo(srcFile);
 		        			
-		        	if(!destFile.exists()) {
 		             FileUtils.copyFile(srcFile, destFile);
-		        	}
 	        	}
 		  } catch (IOException e) {
-				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
-				response.setErrorDesc(e.getMessage());
+				response.setErrorCode(ErrorCode.IMG_SAVE_ERROR);
+				response.setErrorDesc(ErrorDescription.IMG_SAVE_ERROR);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
 				return response;	        
 			}
@@ -222,7 +219,7 @@ public class ProductController {
 			
 			if (null != userResponse && null != userResponse.getUserLst() && userResponse.getUserLst().size()>0) {
 
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));;
+				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
 				response = ps.updateProduct(pRequest);
 			}
 			

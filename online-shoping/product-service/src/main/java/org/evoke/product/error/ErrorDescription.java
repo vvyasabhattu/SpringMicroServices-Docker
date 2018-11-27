@@ -13,4 +13,5 @@ public interface ErrorDescription {
 	String PRODUCT_ALREADY_EXISTS = "Product already exists" ;
 	String INVALID_USER = "Invalid User role ";
 	String PATH_ENCODING_ERROR = "Error in getting web app path";
+	String IMG_SAVE_ERROR = "Error in saving image";
 }
