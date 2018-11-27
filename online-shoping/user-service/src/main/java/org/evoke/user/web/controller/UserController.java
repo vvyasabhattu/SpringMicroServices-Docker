@@ -57,7 +57,7 @@ public class UserController {
 		return "successful";
 	}
 
-	@PostMapping(value = "/register")
+	@PostMapping(value = "/registerUser")
 	public UserResponse add(@RequestBody LoginRequest request) {
 
 		UserResponse response = null;
@@ -128,7 +128,7 @@ public class UserController {
 
 	}
 	
-	@PostMapping(value = "/update")
+	@PostMapping(value = "/updateUser")
 	public UserResponse updateUser(@RequestBody LoginRequest request) {
 		UserResponse response = null;
 
@@ -148,8 +148,49 @@ public class UserController {
 
 	}
 	
+	@PostMapping(value = "/updateAddress")
+	public void updateUserAddress(@RequestBody LoginRequest request) {
+		UserResponse response = null;
+
+		if (null != request && null != request.getUser()) {
+
+			userService.updateUserAddress(request.getUser());
+		} else {
+
+			response = new UserResponse();
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			//return response;
+		}
+
+		//return response;
+
+	}
+	
+	@PostMapping(value = "/updateRole")
+	public void updateRole(@RequestBody LoginRequest request) {
+		//UserResponse response = null;
+
+		if (null != request && null != request.getUser()) {
+
+			userService.updateUserRole(request.getUser());
+		} else {
+
+//			response = new UserResponse();
+//			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+//			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+//			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			//return response;
+		}
+
+		//return response;
+
+	}
+	
+	
 	@PostMapping(value = "/addAddress")
-	public UserResponse insertUser(@RequestBody AddressReq adrReq) {
+	public UserResponse addAddress(@RequestBody AddressReq adrReq) {
 		UserResponse  response = null;
 
 		if (null != adrReq && null != adrReq.getAddress().getUser()) {
@@ -165,10 +206,10 @@ public class UserController {
 			return response;
 	}
 
-	@PostMapping(value = "/delete")
-	public void deleteUser(@RequestBody LoginRequest request) {
+	@PostMapping(value = "/deleteAddress")
+	public void deleteAddress(@RequestBody AddressReq adrReq) {
 		try {
-			userService.deleteUser(request.getUser());
+			userService.deleteAddress(adrReq);
 		} catch (Exception e) {
 			System.out.println("Exception while delete user" + e);
 		}

@@ -10,10 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -66,18 +64,20 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	//@JsonIgnore
 	//@NotNull
 	@Size(min = 1, max = 8)
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "user_id", nullable = false)
+	@OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	//@JoinColumn(name = "user_id", nullable = false)
 	private List<Role> roleLst;
 
-//	@JsonIgnore
-//	@OneToMany(mappedBy="user",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//	//@JoinColumn(name = "user", nullable = false)
-//	private List<Role> roleLst;
+//
+//	//@JsonIgnore
+//		//@NotNull
+//		@Size(min = 1, max = 8)
+//		@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//		@JoinColumn(name = "user_id", nullable = false)
+//		private List<Role> roleLst;
 	
-	
-	@JsonIgnore
-	@OneToMany(mappedBy="user",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	//@JsonIgnore
+	@OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	//@JoinColumn(name = "user", nullable = false)
 	private List<Address> addressLst;
 	

@@ -3,9 +3,9 @@ package org.evoke.user.model;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,28 +30,28 @@ public class Role extends AbstractTimestampEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
-//    
-//    @ManyToOne
-//	@JoinColumn(name="user_id")
-//	User user;
+    //@Enumerated(EnumType.STRING)
+    private String role;
+    
+    @ManyToOne
+	@JoinColumn(name="user_id")
+	User user;
 
     public Role() {}
 
-//    public User getUser() {
-//		return user;
-//	}
-//
-//	public void setUser(User user) {
-//		this.user = user;
-//	}
+    public User getUser() {
+		return user;
+	}
 
-	public Role(RoleEnum role) {
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Role(String role) {
         this.role = role;
     }
 
@@ -64,11 +64,12 @@ public class Role extends AbstractTimestampEntity implements Serializable {
 		this.id = id;
 	}
 
-	public RoleEnum getRole() {
+	
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(RoleEnum role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
     

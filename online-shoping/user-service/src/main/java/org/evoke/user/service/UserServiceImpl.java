@@ -4,14 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EnumType;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.Address;
 import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.Role;
-import org.evoke.user.model.RoleEnum;
 import org.evoke.user.model.User;
 import org.evoke.user.model.UserResponse;
 import org.evoke.user.persistence.dao.UserRepository;
@@ -27,6 +25,8 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -79,13 +79,7 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			final User newuser = new User();
-			List<Role> roleLst = new ArrayList<Role>();
-			Role role = new Role(RoleEnum.CUSTOMER);
-			role.setCreatedUser(user.getFirstName());
-			role.setUpdatedUser(user.getFirstName());
-			role.setCreatedDate(DateUtil.getDDMMYYDate());
-			role.setUpdatedDate(DateUtil.getDDMMYYDate());
-			roleLst.add(role);
+			
 			newuser.setFirstName(user.getFirstName());
 			newuser.setLastName(user.getLastName());
 			newuser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -93,7 +87,6 @@ public class UserServiceImpl implements UserService {
 			newuser.setEmail(user.getEmail());
 			newuser.setContactNumber(user.getContactNumber());
 			newuser.setAddressLst(user.getAddressLst());
-			newuser.setRoleLst(roleLst);
 			newuser.setCreatedUser(user.getFirstName());
 			newuser.setUpdatedUser(user.getFirstName());
 			newuser.setCreatedDate(DateUtil.getDDMMYYDate());
@@ -106,9 +99,25 @@ public class UserServiceImpl implements UserService {
 				newuser.getAddressLst().get(0).setUpdatedUser(user.getFirstName());
 				
 			}
-			session.saveOrUpdate(newuser);
+			session.save(newuser);
+			
+			//session.flush();
+			//session.evict(newuser);
+			
+			User user1 = session.get(User.class, newuser.getId());
+			System.out.println("user id..........."+user1.getId());
+			List<Role> roleLst = new ArrayList<Role>();
+			Role role = new Role("Customer");
+			role.setCreatedUser(user.getFirstName());
+			role.setUpdatedUser(user.getFirstName());
+			role.setCreatedDate(DateUtil.getDDMMYYDate());
+			role.setUpdatedDate(DateUtil.getDDMMYYDate());
+			role.setUser(user1);
+			roleLst.add(role);
+			user1.setRoleLst(roleLst);
+			session.saveOrUpdate(user1);
 			session.flush();
-			session.evict(newuser);
+
 			response = new UserResponse();
 			lstUser = new ArrayList<User>();
 			newuser.setPassword(null);
@@ -242,27 +251,6 @@ public class UserServiceImpl implements UserService {
 			user.setCreatedDate(DateUtil.getDDMMYYDate());
 			user.setUpdatedDate(DateUtil.getDDMMYYDate());
 
-			if (user.getRoleLst() != null && user.getRoleLst().size() > 0) {
-				for (Role role : user.getRoleLst()) {
-					List<Role> roleLst = new ArrayList<Role>();
-					role = new Role(role.getRole());
-					role.setCreatedUser(user.getFirstName());
-					role.setUpdatedUser(user.getFirstName());
-					role.setCreatedDate(DateUtil.getDDMMYYDate());
-					role.setUpdatedDate(DateUtil.getDDMMYYDate());
-					roleLst.add(role);
-					user.setRoleLst(roleLst);
-				}
-			}
-
-			if (user.getAddressLst() != null && user.getAddressLst().size() > 0) {
-				for (Address adr : user.getAddressLst()) {
-					adr.setCreatedUser(user.getFirstName());
-					adr.setUpdatedUser(user.getFirstName());
-					adr.setCreatedDate(DateUtil.getDDMMYYDate());
-					adr.setUpdatedDate(DateUtil.getDDMMYYDate());
-				}
-			}
 			session.update(user);
 			session.flush();
 			System.out.println("User Updated successfully.....!!");
@@ -271,7 +259,8 @@ public class UserServiceImpl implements UserService {
 			lstUser.add(user);
 			response.setUserLst(lstUser);
 
-		} catch (HibernateException e) {
+		} catch (Exception e) {
+			System.out.println("Exception while updating user ..........."+e);
 			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -279,6 +268,101 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 
+	
+	
+	
+	@Override
+	public void updateUserAddress(User user) {
+
+		try {
+			session.clear();
+
+			List<Address> addressList=new ArrayList<Address>();
+			User user1 = session.get(User.class,user.getId());
+			
+			user.setCreatedUser(user1.getFirstName());
+			user.setUpdatedUser(user1.getFirstName());
+			user.setUpdatedDate(DateUtil.getDDMMYYDate());
+			user.setCreatedDate(DateUtil.getDDMMYYDate());
+			
+			user.setEmail(user1.getEmail());
+			user.setContactNumber(user1.getContactNumber());
+			user.setFirstName(user1.getFirstName());
+			user.setLastName(user1.getLastName());
+			
+			if (user.getAddressLst() != null && user.getAddressLst().size() > 0) {
+				for (Address adr : user.getAddressLst()) {
+					adr.setCreatedUser(user1.getFirstName());
+					adr.setUpdatedUser(user1.getFirstName());
+					adr.setCreatedDate(DateUtil.getDDMMYYDate());
+					adr.setUpdatedDate(DateUtil.getDDMMYYDate());
+					adr.setUser(user);
+					addressList.add(adr);
+					user.setAddressLst(addressList);
+				}
+			}
+			
+			session.clear();
+			session.update(user);
+			
+			session.flush();
+		} catch (Exception e) {
+			System.out.println("Exception while updating User Address ..........."+e);
+		}
+	}
+	
+	
+	@Override
+	public void updateUserRole(User user) {
+
+		UserResponse response = null;
+		List<User> lstUser = null;
+
+		try {
+			session.clear();
+
+			List<Role> roleList=new ArrayList<Role>();
+			User user1 = session.get(User.class,user.getId());
+			
+			user.setCreatedUser(user1.getFirstName());
+			user.setUpdatedUser(user1.getFirstName());
+			user.setUpdatedDate(DateUtil.getDDMMYYDate());
+			user.setCreatedDate(DateUtil.getDDMMYYDate());
+			
+			user.setEmail(user1.getEmail());
+			user.setContactNumber(user1.getContactNumber());
+			user.setFirstName(user1.getFirstName());
+			user.setLastName(user1.getLastName());
+
+			if (user.getRoleLst() != null && user.getRoleLst().size() > 0) {
+				for (Role role : user.getRoleLst()) {
+					role.setCreatedUser(user.getFirstName());
+					role.setUpdatedUser(user.getFirstName());
+					role.setCreatedDate(DateUtil.getDDMMYYDate());
+					role.setUpdatedDate(DateUtil.getDDMMYYDate());
+					role.setUser(user);
+					roleList.add(role);
+					user.setRoleLst(roleList);
+				}
+			}
+			
+			session.clear();
+			session.update(user);
+			
+			session.flush();
+			response = new UserResponse();
+			lstUser = new ArrayList<User>();
+			lstUser.add(user);
+			response.setUserLst(lstUser);
+
+
+		} catch (Exception e) {
+			System.out.println("Exception while updating/Adding User Role ..........."+e);
+		}
+	}
+	
+	
+	
 	public UserResponse insertAddress(AddressReq adrReq) {
 
 		UserResponse response = null;
@@ -286,10 +370,14 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			session.clear();
-			adrReq.getAddress().setCreatedUser("null");
-			adrReq.getAddress().setUpdatedUser("null");
+			
 			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
 			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
+			
+			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
+			adrReq.getAddress().setCreatedUser(user.getFirstName());
+			adrReq.getAddress().setUpdatedUser(user.getLastName());
+
 			session.save(adrReq.getAddress());
 
 			session.flush();
@@ -316,15 +404,27 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUser(User user) {
+	public void deleteAddress(AddressReq adrReq) {
 		try {
 			session.clear();
-			session.delete(session.get(User.class, user.getId()));
+			//session.delete(session.get(User.class, user.getId()));
+			session.delete(session.get(Address.class, adrReq.getAddress().getId()));
 			session.flush();
 		} catch (HibernateException e) {
 				System.out.println("Exception while deleteing user(Hibernate exception)"+ e);
 		}
 	}
+	
+//	@Override
+//	public void deleteAdd(User user) {
+//		try {
+//			session.clear();
+//			session.delete(session.get(User.class, user.getId()));
+//			session.flush();
+//		} catch (HibernateException e) {
+//				System.out.println("Exception while deleteing user(Hibernate exception)"+ e);
+//		}
+//	}
 
 	@Override
 	public void createVerificationTokenForUser(User user, String token) {

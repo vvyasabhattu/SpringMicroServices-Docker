@@ -20,7 +20,7 @@ public interface UserService {
 
     void saveRegisteredUser(User user);
 
-    void deleteUser(User user);
+    void deleteAddress(AddressReq adrReq);
 
     void createVerificationTokenForUser(User user, String token);
 
@@ -47,5 +47,7 @@ public interface UserService {
     List<String> getUsersFromSessionRegistry();
 
     BaseResponse updateUser(User user);
+    void updateUserAddress(User user);
+    void  updateUserRole(User user);
     BaseResponse insertAddress(AddressReq adr);
 }

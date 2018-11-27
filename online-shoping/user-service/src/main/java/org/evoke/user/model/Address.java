@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -47,6 +48,7 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	@Column
 	private String addrLine2;
 	
+	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	User user;
