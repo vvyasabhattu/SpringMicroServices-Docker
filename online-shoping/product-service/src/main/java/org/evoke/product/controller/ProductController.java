@@ -28,6 +28,8 @@ import org.evoke.product.model.User;
 import org.evoke.product.model.UserResponse;
 import org.evoke.product.service.ProductServiceImpl;
 import org.evoke.product.util.ProductMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +46,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(value = "/product")
 public class ProductController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
 	@Autowired
 	ProductServiceImpl ps;
@@ -130,6 +134,7 @@ public class ProductController {
 			response.setErrorCode(ErrorCode.PATH_ENCODING_ERROR);
 			response.setErrorDesc(ErrorDescription.PATH_ENCODING_ERROR);
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			logger.error(e.getMessage());
 			return response;
 		}
 		
@@ -156,6 +161,7 @@ public class ProductController {
 				response.setErrorCode(ErrorCode.IMG_SAVE_ERROR);
 				response.setErrorDesc(ErrorDescription.IMG_SAVE_ERROR);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				logger.error(e.getMessage());
 				return response;	        
 			}
 	        
@@ -241,13 +247,21 @@ public class ProductController {
 		}
 	}
 
-/*	@GetMapping("byUser/{user_id}")
-	public @ResponseBody List<Product> getProductsByUserId(@PathVariable("user_id") int user_id) {
+	@GetMapping("byUser/{user_id}")
+	public @ResponseBody ProductResponseList getProductsByUserId(@PathVariable("user_id") int user_id) {
+		    
+		ProductResponseList response = new ProductResponseList();
 
-		List<Product> pList = (List<Product>) ps.getProductsByUserId(user_id);
-
-		return pList;
-	}*/
+		try {
+			return ps.getProductsByUserId(user_id);
+			}
+			catch(Exception e) {
+				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
+				response.setErrorDesc(e.getMessage());
+				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+				return response;
+			}
+	}
 	
 	@GetMapping("byCategory/{category_id}")
 	public @ResponseBody ProductResponseList getProductsByCategoryId(@PathVariable("category_id") int category_id) {

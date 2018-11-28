@@ -6,8 +6,6 @@ import org.evoke.product.model.Category;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.User;
-import org.evoke.product.model.User_address;
-import org.evoke.product.model.User_product;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;

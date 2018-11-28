@@ -18,7 +18,6 @@ import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.ProductResponseList;
 import org.evoke.product.model.User;
-import org.evoke.product.model.User_product;
 import org.evoke.product.util.DateUtil;
 import org.evoke.product.util.ProductMapper;
 import org.hibernate.Criteria;
@@ -175,8 +174,10 @@ public class ProductDaoImpl implements ProductDao {
     @Override
 	public ProductResponseList getProductsByUserId(int id) {
 		
-		User ud = session.get(User.class, id);
-		return null;// ud.getProducts();
+		 Query query = session.createQuery("from Product where User_id=:id and is_deleted='no'");  //get(User.class, id);
+		 query.setInteger("id", id);
+    	 List<Product> productList = query.list() ;
+    	 return MapProductResponse(productList);
 
 	}
 	
@@ -186,7 +187,7 @@ public class ProductDaoImpl implements ProductDao {
     	 Query query = session.createQuery("from Product where category_id=:id and is_deleted='no'");  //get(User.class, id);
 		 query.setInteger("id", id);
     	 List<Product> productList = query.list() ;
-    	 return MapProductResponse(productList);// ud.getProducts();
+    	 return MapProductResponse(productList);
 
 	}
 	
