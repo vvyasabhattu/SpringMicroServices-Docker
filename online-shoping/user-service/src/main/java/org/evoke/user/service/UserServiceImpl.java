@@ -2,13 +2,16 @@ package org.evoke.user.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.Address;
 import org.evoke.user.model.AddressReq;
+import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.Role;
 import org.evoke.user.model.User;
 import org.evoke.user.model.UserResponse;
@@ -25,8 +28,6 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -272,8 +273,11 @@ public class UserServiceImpl implements UserService {
 	
 	
 	@Override
-	public void updateUserAddress(User user) {
+	public UserResponse updateUserAddress(User user) {
 
+		UserResponse response = null;
+		List<User> lstUser = null;
+		
 		try {
 			session.clear();
 
@@ -306,14 +310,22 @@ public class UserServiceImpl implements UserService {
 			session.update(user);
 			
 			session.flush();
+			response = new UserResponse();
+			lstUser = new ArrayList<User>();
+			lstUser.add(user);
+			response.setUserLst(lstUser);
 		} catch (Exception e) {
 			System.out.println("Exception while updating User Address ..........."+e);
+			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
 		}
+		return response;
 	}
 	
 	
 	@Override
-	public void updateUserRole(User user) {
+	public UserResponse updateUserRole(User user) {
 
 		UserResponse response = null;
 		List<User> lstUser = null;
@@ -359,6 +371,7 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			System.out.println("Exception while updating/Adding User Role ..........."+e);
 		}
+		return response;
 	}
 	
 	
@@ -404,27 +417,43 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteAddress(AddressReq adrReq) {
+	public BaseResponse deleteAddress(AddressReq adrReq) {
+		BaseResponse baseResponse = new BaseResponse();
+		Map<String, Object> responseMessage = new HashMap<>();
 		try {
 			session.clear();
-			//session.delete(session.get(User.class, user.getId()));
 			session.delete(session.get(Address.class, adrReq.getAddress().getId()));
 			session.flush();
-		} catch (HibernateException e) {
-				System.out.println("Exception while deleteing user(Hibernate exception)"+ e);
+			responseMessage.put("SUCCESS",
+					"Address deleted successfully with addressId: " + adrReq.getAddress().getId());
+		} catch (Exception e) {
+			baseResponse.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			baseResponse.setErrorDesc(e.getMessage());
+			baseResponse.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			responseMessage.put("FAILED", "Address deletion failed with addressId: " + adrReq.getAddress().getId());
 		}
+		baseResponse.setResponse(responseMessage);
+		return baseResponse;
 	}
 	
-//	@Override
-//	public void deleteAdd(User user) {
-//		try {
-//			session.clear();
-//			session.delete(session.get(User.class, user.getId()));
-//			session.flush();
-//		} catch (HibernateException e) {
-//				System.out.println("Exception while deleteing user(Hibernate exception)"+ e);
-//		}
-//	}
+	@Override
+	public BaseResponse deleteUser(User user) {
+		BaseResponse baseResponse = new BaseResponse();
+		Map<String, Object> responseMessage = new HashMap<>();
+		try {
+			session.clear();
+			session.delete(session.get(User.class, user.getId()));
+			session.flush();
+		} catch (Exception e) {
+			System.out.println("excpetion......."+e);
+			baseResponse.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			baseResponse.setErrorDesc(e.getMessage());
+			baseResponse.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			responseMessage.put("FAILED", "User deletion failed with userid: " + user.getId());		
+			}
+		baseResponse.setResponse(responseMessage);
+		return baseResponse;
+	}
 
 	@Override
 	public void createVerificationTokenForUser(User user, String token) {

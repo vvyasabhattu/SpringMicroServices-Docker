@@ -48,7 +48,7 @@ public class Address  extends AbstractTimestampEntity implements Serializable {
 	@Column
 	private String addrLine2;
 	
-	//@JsonIgnore
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	User user;

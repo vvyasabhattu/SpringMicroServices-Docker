@@ -19,7 +19,9 @@ package org.evoke.user.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.AddressReq;
+import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.LoginRequest;
+import org.evoke.user.model.User;
 import org.evoke.user.model.UserResponse;
 import org.evoke.user.service.UserServiceImpl;
 import org.evoke.user.web.error.ErrorCode;
@@ -28,6 +30,7 @@ import org.evoke.user.web.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -149,42 +152,41 @@ public class UserController {
 	}
 	
 	@PostMapping(value = "/updateAddress")
-	public void updateUserAddress(@RequestBody LoginRequest request) {
+	public UserResponse updateUserAddress(@RequestBody LoginRequest request) {
 		UserResponse response = null;
 
 		if (null != request && null != request.getUser()) {
 
-			userService.updateUserAddress(request.getUser());
+			response = userService.updateUserAddress(request.getUser());
+		} else {
+			response = new UserResponse();
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+
+		return response;
+
+	}
+	
+	@PostMapping(value = "/updateRole")
+	public UserResponse updateRole(@RequestBody LoginRequest request) {
+		UserResponse response = null;
+
+		if (null != request && null != request.getUser()) {
+
+			response = userService.updateUserRole(request.getUser());
 		} else {
 
 			response = new UserResponse();
 			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
-			//return response;
+			return response;
 		}
 
-		//return response;
-
-	}
-	
-	@PostMapping(value = "/updateRole")
-	public void updateRole(@RequestBody LoginRequest request) {
-		//UserResponse response = null;
-
-		if (null != request && null != request.getUser()) {
-
-			userService.updateUserRole(request.getUser());
-		} else {
-
-//			response = new UserResponse();
-//			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
-//			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
-//			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
-			//return response;
-		}
-
-		//return response;
+		return response;
 
 	}
 	
@@ -193,6 +195,7 @@ public class UserController {
 	public UserResponse addAddress(@RequestBody AddressReq adrReq) {
 		UserResponse  response = null;
 
+		System.out.println("adrReq..."+adrReq);
 		if (null != adrReq && null != adrReq.getAddress().getUser()) {
 			response = userService.insertAddress(adrReq);
 		}
@@ -206,13 +209,14 @@ public class UserController {
 			return response;
 	}
 
-	@PostMapping(value = "/deleteAddress")
-	public void deleteAddress(@RequestBody AddressReq adrReq) {
-		try {
-			userService.deleteAddress(adrReq);
-		} catch (Exception e) {
-			System.out.println("Exception while delete user" + e);
-		}
+	@DeleteMapping(value = "/deleteAddress")
+	public BaseResponse deleteAddress(@RequestBody AddressReq adrReq) {
+		return userService.deleteAddress(adrReq);
+	}
+
+	@DeleteMapping(value = "/deleteUser")
+	public BaseResponse deleteUser(@RequestBody  LoginRequest request) {
+		return userService.deleteUser(request.getUser());
 
 	}
 }

@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -37,6 +38,7 @@ public class Role extends AbstractTimestampEntity implements Serializable {
     //@Enumerated(EnumType.STRING)
     private String role;
     
+    @JsonIgnore
     @ManyToOne
 	@JoinColumn(name="user_id")
 	User user;

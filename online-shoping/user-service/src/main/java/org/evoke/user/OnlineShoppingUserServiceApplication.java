@@ -38,7 +38,7 @@ public class OnlineShoppingUserServiceApplication {
 	    List<HttpMessageConverter<?>> httpMessageConverter = new ArrayList<HttpMessageConverter<?>>();
 	    httpMessageConverter.add(mappingJacksonHttpMessageConverter);
 
-	    String[] supportedHttpMethods = { "POST", "GET", "HEAD" };
+	    String[] supportedHttpMethods = { "POST", "GET", "HEAD", "DELETE", "PUT" };
 
 	    annotationMethodHandlerAdapter.setMessageConverters(httpMessageConverter);
 	    annotationMethodHandlerAdapter.setSupportedMethods(supportedHttpMethods);
