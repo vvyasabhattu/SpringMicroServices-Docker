@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.Address;
 import org.evoke.user.model.AddressReq;
+import org.evoke.user.model.AddressResponse;
 import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.Role;
 import org.evoke.user.model.User;
@@ -33,8 +34,6 @@ import org.springframework.stereotype.Service;
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
 
-	
-
 	@Autowired
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -46,10 +45,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	Session session;
-	
+
 	@Autowired
 	UserRepository userRepo;
-
 
 	@Override
 	public UserResponse registerUser(final User user) {
@@ -57,15 +55,15 @@ public class UserServiceImpl implements UserService {
 		System.out.println("Checking if the user already exists");
 		UserResponse response = null;
 		List<User> lstUser = null;
-		if( null == user.getPassword() || StringUtils.isEmpty(user.getPassword())){
-			
+		if (null == user.getPassword() || StringUtils.isEmpty(user.getPassword())) {
+
 			response = new UserResponse();
 			response.setErrorCode(ErrorCode.PASSWORD_NOT_VALID);
 			response.setErrorDesc(ErrorDescription.PASSWORD_NOT_VALID);
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
 			return response;
 		}
-		
+
 		if (emailExist(user.getEmail())) {
 
 			response = new UserResponse();
@@ -80,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			final User newuser = new User();
-			
+
 			newuser.setFirstName(user.getFirstName());
 			newuser.setLastName(user.getLastName());
 			newuser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -98,15 +96,15 @@ public class UserServiceImpl implements UserService {
 				newuser.getAddressLst().get(0).setUpdatedDate(DateUtil.getDDMMYYDate());
 				newuser.getAddressLst().get(0).setCreatedUser(user.getFirstName());
 				newuser.getAddressLst().get(0).setUpdatedUser(user.getFirstName());
-				
+
 			}
 			session.save(newuser);
-			
-			//session.flush();
-			//session.evict(newuser);
-			
+
+			// session.flush();
+			// session.evict(newuser);
+
 			User user1 = session.get(User.class, newuser.getId());
-			System.out.println("user id..........."+user1.getId());
+			System.out.println("user id..........." + user1.getId());
 			List<Role> roleLst = new ArrayList<Role>();
 			Role role = new Role("Customer");
 			role.setCreatedUser(user.getFirstName());
@@ -207,7 +205,7 @@ public class UserServiceImpl implements UserService {
 			if (null != userDetails) {
 				userLst = new ArrayList<User>();
 				userDetails.setPassword(userDetails.getPassword());
-				userLst.add( userDetails);
+				userLst.add(userDetails);
 				response = new UserResponse();
 				response.setUserLst(userLst);
 
@@ -261,7 +259,7 @@ public class UserServiceImpl implements UserService {
 			response.setUserLst(lstUser);
 
 		} catch (Exception e) {
-			System.out.println("Exception while updating user ..........."+e);
+			System.out.println("Exception while updating user ..........." + e);
 			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -269,61 +267,42 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 
-	
-	
-	
 	@Override
-	public UserResponse updateUserAddress(User user) {
+	public AddressResponse updateUserAddress(AddressReq adrReq) {
 
-		UserResponse response = null;
-		List<User> lstUser = null;
-		
+		AddressResponse response = null;
+
 		try {
+
+			List<Address> addressLst = null;
+
 			session.clear();
 
-			List<Address> addressList=new ArrayList<Address>();
-			User user1 = session.get(User.class,user.getId());
-			
-			user.setCreatedUser(user1.getFirstName());
-			user.setUpdatedUser(user1.getFirstName());
-			user.setUpdatedDate(DateUtil.getDDMMYYDate());
-			user.setCreatedDate(DateUtil.getDDMMYYDate());
-			
-			user.setEmail(user1.getEmail());
-			user.setContactNumber(user1.getContactNumber());
-			user.setFirstName(user1.getFirstName());
-			user.setLastName(user1.getLastName());
-			
-			if (user.getAddressLst() != null && user.getAddressLst().size() > 0) {
-				for (Address adr : user.getAddressLst()) {
-					adr.setCreatedUser(user1.getFirstName());
-					adr.setUpdatedUser(user1.getFirstName());
-					adr.setCreatedDate(DateUtil.getDDMMYYDate());
-					adr.setUpdatedDate(DateUtil.getDDMMYYDate());
-					adr.setUser(user);
-					addressList.add(adr);
-					user.setAddressLst(addressList);
-				}
-			}
-			
-			session.clear();
-			session.update(user);
-			
+			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
+			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
+
+			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
+			adrReq.getAddress().setCreatedUser(user.getFirstName());
+			adrReq.getAddress().setUpdatedUser(user.getLastName());
+
+			session.saveOrUpdate(adrReq.getAddress());
+
 			session.flush();
-			response = new UserResponse();
-			lstUser = new ArrayList<User>();
-			lstUser.add(user);
-			response.setUserLst(lstUser);
+			System.out.println("User Updated successfully.....!!");
+			response = new AddressResponse();
+			addressLst = new ArrayList<Address>();
+			addressLst.add(adrReq.getAddress());
+			response.setAddressLst(addressLst);
+
 		} catch (Exception e) {
-			System.out.println("Exception while updating User Address ..........."+e);
+			System.out.println("Exception while updating User Address ..........." + e);
 			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	public UserResponse updateUserRole(User user) {
 
@@ -333,14 +312,14 @@ public class UserServiceImpl implements UserService {
 		try {
 			session.clear();
 
-			List<Role> roleList=new ArrayList<Role>();
-			User user1 = session.get(User.class,user.getId());
-			
+			List<Role> roleList = new ArrayList<Role>();
+			User user1 = session.get(User.class, user.getId());
+
 			user.setCreatedUser(user1.getFirstName());
 			user.setUpdatedUser(user1.getFirstName());
 			user.setUpdatedDate(DateUtil.getDDMMYYDate());
 			user.setCreatedDate(DateUtil.getDDMMYYDate());
-			
+
 			user.setEmail(user1.getEmail());
 			user.setContactNumber(user1.getContactNumber());
 			user.setFirstName(user1.getFirstName());
@@ -357,25 +336,22 @@ public class UserServiceImpl implements UserService {
 					user.setRoleLst(roleList);
 				}
 			}
-			
+
 			session.clear();
 			session.update(user);
-			
+
 			session.flush();
 			response = new UserResponse();
 			lstUser = new ArrayList<User>();
 			lstUser.add(user);
 			response.setUserLst(lstUser);
 
-
 		} catch (Exception e) {
-			System.out.println("Exception while updating/Adding User Role ..........."+e);
+			System.out.println("Exception while updating/Adding User Role ..........." + e);
 		}
 		return response;
 	}
-	
-	
-	
+
 	public UserResponse insertAddress(AddressReq adrReq) {
 
 		UserResponse response = null;
@@ -383,10 +359,10 @@ public class UserServiceImpl implements UserService {
 
 		try {
 			session.clear();
-			
+
 			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
 			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
-			
+
 			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
 			adrReq.getAddress().setCreatedUser(user.getFirstName());
 			adrReq.getAddress().setUpdatedUser(user.getLastName());
@@ -407,8 +383,6 @@ public class UserServiceImpl implements UserService {
 		}
 		return response;
 	}
-	
-	
 
 	@Override
 	public void saveRegisteredUser(User user) {
@@ -435,7 +409,7 @@ public class UserServiceImpl implements UserService {
 		baseResponse.setResponse(responseMessage);
 		return baseResponse;
 	}
-	
+
 	@Override
 	public BaseResponse deleteUser(User user) {
 		BaseResponse baseResponse = new BaseResponse();
@@ -445,12 +419,12 @@ public class UserServiceImpl implements UserService {
 			session.delete(session.get(User.class, user.getId()));
 			session.flush();
 		} catch (Exception e) {
-			System.out.println("excpetion......."+e);
+			System.out.println("excpetion......." + e);
 			baseResponse.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
 			baseResponse.setErrorDesc(e.getMessage());
 			baseResponse.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-			responseMessage.put("FAILED", "User deletion failed with userid: " + user.getId());		
-			}
+			responseMessage.put("FAILED", "User deletion failed with userid: " + user.getId());
+		}
 		baseResponse.setResponse(responseMessage);
 		return baseResponse;
 	}

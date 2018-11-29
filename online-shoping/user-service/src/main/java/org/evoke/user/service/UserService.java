@@ -48,7 +48,7 @@ public interface UserService {
     List<String> getUsersFromSessionRegistry();
 
     BaseResponse updateUser(User user);
-    BaseResponse updateUserAddress(User user);
+    BaseResponse updateUserAddress(AddressReq addressReq);
     BaseResponse  updateUserRole(User user);
     BaseResponse insertAddress(AddressReq adr);
 }

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-
 @JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "user")
@@ -56,38 +55,17 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	// @Pattern(regexp="(^$|[0-9]{10})")
 	private String contactNumber;
 
-
-	//@NotBlank(message = "Please enter password!")
+	// @NotBlank(message = "Please enter password!")
 	@Column(updatable = false)
 	private String password;
 
-	//@JsonIgnore
-	//@NotNull
 	@Size(min = 1, max = 8)
-	@OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	//@JoinColumn(name = "user_id", nullable = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Role> roleLst;
 
-//
-//	//@JsonIgnore
-//		//@NotNull
-//		@Size(min = 1, max = 8)
-//		@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//		@JoinColumn(name = "user_id", nullable = false)
-//		private List<Role> roleLst;
-	
-	//@JsonIgnore
-	@OneToMany(mappedBy="user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	//@JoinColumn(name = "user", nullable = false)
+	@OneToMany(mappedBy = "user")
 	private List<Address> addressLst;
-	
-//	@JsonIgnore
-//	@OneToMany(mappedBy="user")
-//	//@JoinColumn(name = "user", nullable = false)
-//	private List<Address> addressLst;
-	
-	
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<Product> productLst;
@@ -155,6 +133,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	public void setAddressLst(List<Address> addressLst) {
 		this.addressLst = addressLst;
 	}
+
 	public List<Product> getProductLst() {
 		return productLst;
 	}
@@ -169,7 +148,5 @@ public class User extends AbstractTimestampEntity implements Serializable {
 				+ ", contactNumber=" + contactNumber + ", password=" + password + ", roleLst=" + roleLst
 				+ ", addressLst=" + addressLst + ", productLst=" + productLst + "]";
 	}
-
-	
 
 }

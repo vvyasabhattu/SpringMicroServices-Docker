@@ -19,9 +19,9 @@ package org.evoke.user.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.AddressReq;
+import org.evoke.user.model.AddressResponse;
 import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.LoginRequest;
-import org.evoke.user.model.User;
 import org.evoke.user.model.UserResponse;
 import org.evoke.user.service.UserServiceImpl;
 import org.evoke.user.web.error.ErrorCode;
@@ -54,9 +54,9 @@ public class UserController {
 
 	@GetMapping("/check")
 	public String check() {
-		 logger.info("this is a info message");
-	      logger.warn("this is a warn message");
-	      logger.error("this is a error message");
+		logger.info("this is a info message");
+		logger.warn("this is a warn message");
+		logger.error("this is a error message");
 		return "successful";
 	}
 
@@ -104,14 +104,12 @@ public class UserController {
 	@PostMapping(value = "/login")
 	public UserResponse loginUser(@RequestBody LoginRequest request) {
 
-		
 		UserResponse response = null;
 		if (null != request && null != request.getUser()) {
 
 			response = userService.userLogin(request.getUser());
 
-		} else if (null != request.getUser().getEmail()
-				&& StringUtils.isNotEmpty(request.getUser().getEmail())) {
+		} else if (null != request.getUser().getEmail() && StringUtils.isNotEmpty(request.getUser().getEmail())) {
 
 			response = new UserResponse();
 			response.setErrorCode(ErrorCode.EMAIL_NOT_VALID);
@@ -130,7 +128,7 @@ public class UserController {
 		return response;
 
 	}
-	
+
 	@PostMapping(value = "/updateUser")
 	public UserResponse updateUser(@RequestBody LoginRequest request) {
 		UserResponse response = null;
@@ -150,16 +148,17 @@ public class UserController {
 		return response;
 
 	}
-	
+
 	@PostMapping(value = "/updateAddress")
-	public UserResponse updateUserAddress(@RequestBody LoginRequest request) {
-		UserResponse response = null;
+	public AddressResponse updateUserAddress(@RequestBody AddressReq request) {
 
-		if (null != request && null != request.getUser()) {
+		AddressResponse response = null;
 
-			response = userService.updateUserAddress(request.getUser());
+		if (null != request && null != request.getAddress()) {
+
+			response = userService.updateUserAddress(request);
 		} else {
-			response = new UserResponse();
+			response = new AddressResponse();
 			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
@@ -169,7 +168,7 @@ public class UserController {
 		return response;
 
 	}
-	
+
 	@PostMapping(value = "/updateRole")
 	public UserResponse updateRole(@RequestBody LoginRequest request) {
 		UserResponse response = null;
@@ -189,24 +188,22 @@ public class UserController {
 		return response;
 
 	}
-	
-	
+
 	@PostMapping(value = "/addAddress")
 	public UserResponse addAddress(@RequestBody AddressReq adrReq) {
-		UserResponse  response = null;
+		UserResponse response = null;
 
-		System.out.println("adrReq..."+adrReq);
+		System.out.println("adrReq..." + adrReq);
 		if (null != adrReq && null != adrReq.getAddress().getUser()) {
 			response = userService.insertAddress(adrReq);
-		}
-		else {
+		} else {
 			response = new UserResponse();
 			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
 			return response;
 		}
-			return response;
+		return response;
 	}
 
 	@DeleteMapping(value = "/deleteAddress")
@@ -215,7 +212,7 @@ public class UserController {
 	}
 
 	@DeleteMapping(value = "/deleteUser")
-	public BaseResponse deleteUser(@RequestBody  LoginRequest request) {
+	public BaseResponse deleteUser(@RequestBody LoginRequest request) {
 		return userService.deleteUser(request.getUser());
 
 	}
