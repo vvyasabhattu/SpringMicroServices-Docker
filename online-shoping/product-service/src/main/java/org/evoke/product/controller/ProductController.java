@@ -1,22 +1,18 @@
 package org.evoke.product.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.io.FileUtils;
 import org.evoke.product.error.ErrorCode;
 import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
@@ -28,6 +24,7 @@ import org.evoke.product.model.User;
 import org.evoke.product.model.UserResponse;
 import org.evoke.product.service.ProductServiceImpl;
 import org.evoke.product.util.ProductMapper;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +37,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/product")
@@ -123,9 +118,12 @@ public class ProductController {
 	
 	
 	@PostMapping("/uploadImg/{product_id}")
-	public ProductResponseList addProductImg(@RequestBody MultipartFile img,@PathVariable("product_id") int product_id) {
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public ProductResponseList addProductImg(@FormDataParam("file") InputStream inputStream,@PathVariable("product_id") int product_id) {
 
 		ProductResponseList response = new ProductResponseList();
+		
+		System.out.println(inputStream);
 		
 		  String UPLOADED_FOLDER = null;
 		try {
@@ -149,13 +147,11 @@ public class ProductController {
 		   }
 		   
 		  try {
-	        	if(img!=null) {
-		            // Get the file and save it somewhere
-		        	destFile = new File(UPLOADED_FOLDER+ product_id + "_"+ img.getOriginalFilename());
-		        	srcFile =  new File(img.getOriginalFilename());
-		        	img.transferTo(srcFile);
-		        			
-		             FileUtils.copyFile(srcFile, destFile);
+	        	if(inputStream!=null) {
+		            // Get the file and save it .
+		        	destFile = new File(UPLOADED_FOLDER+ product_id + "_image.jpg");
+		        	
+		        	Files.copy(inputStream, destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	        	}
 		  } catch (IOException e) {
 				response.setErrorCode(ErrorCode.IMG_SAVE_ERROR);
@@ -165,7 +161,7 @@ public class ProductController {
 				return response;	        
 			}
 	        
-		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+img.getOriginalFilename());
+		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+"image.jpg");
 	}
 	
 
