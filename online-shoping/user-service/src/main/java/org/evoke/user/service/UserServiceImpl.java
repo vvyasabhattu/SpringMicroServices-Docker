@@ -210,6 +210,7 @@ public class UserServiceImpl implements UserService {
 			if (null != userDetails) {
 				userLst = new ArrayList<User>();
 				userDetails.setPassword(userDetails.getPassword());
+				userDetails.setAddressLst(null);
 				userLst.add(userDetails);
 				response = new UserResponse();
 				response.setUserLst(userLst);
