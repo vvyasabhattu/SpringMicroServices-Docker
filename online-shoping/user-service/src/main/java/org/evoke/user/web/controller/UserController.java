@@ -20,6 +20,7 @@ package org.evoke.user.web.controller;
 import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.AddressResponse;
+import org.evoke.user.model.AddressResponseLst;
 import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.LoginRequest;
 import org.evoke.user.model.UserResponse;
@@ -100,6 +101,7 @@ public class UserController {
 		return response;
 
 	}
+	
 
 	@PostMapping(value = "/login")
 	public UserResponse loginUser(@RequestBody LoginRequest request) {
@@ -215,4 +217,18 @@ public class UserController {
 		return userService.deleteUser(request.getUser());
 
 	}
+	
+	@PostMapping(value = "/getAddress")
+	public AddressResponseLst getAddress(@RequestBody AddressReq request) {
+
+		AddressResponseLst response = null;
+		if (null != request && null != request.getAddress()) {
+
+			response = userService.getAddress(request.getAddress().getUser().getId());
+		}
+
+		return response;
+
+	}
+	
 }

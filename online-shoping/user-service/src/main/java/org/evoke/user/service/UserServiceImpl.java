@@ -12,15 +12,17 @@ import org.apache.commons.lang.StringUtils;
 import org.evoke.user.model.Address;
 import org.evoke.user.model.AddressReq;
 import org.evoke.user.model.AddressResponse;
+import org.evoke.user.model.AddressResponseLst;
 import org.evoke.user.model.BaseResponse;
 import org.evoke.user.model.Role;
 import org.evoke.user.model.User;
 import org.evoke.user.model.UserResponse;
+import org.evoke.user.persistence.dao.UserDao;
 import org.evoke.user.persistence.dao.UserRepository;
+import org.evoke.user.util.DateUtil;
 import org.evoke.user.web.error.ErrorCode;
 import org.evoke.user.web.error.ErrorDescription;
 import org.evoke.user.web.error.ErrorType;
-import org.evoke.util.DateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository repository;
 
+	@Autowired
+	private UserDao userDao;
+	
 	@Autowired
 	HibernateTemplate hibernateTemplate;
 
@@ -494,6 +499,11 @@ public class UserServiceImpl implements UserService {
 	public List<String> getUsersFromSessionRegistry() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public AddressResponseLst getAddress(int userId) {
+		
+		return userDao.getAddress(userId);
 	}
 
 }

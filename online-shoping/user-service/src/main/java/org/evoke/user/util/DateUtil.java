@@ -1,4 +1,4 @@
-package org.evoke.util;
+package org.evoke.user.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
