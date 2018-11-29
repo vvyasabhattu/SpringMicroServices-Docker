@@ -3,13 +3,16 @@ package org.evoke.product.model;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -20,24 +23,41 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "role")
-public class Role extends AbstractTimestampEntity implements Serializable{
+public class Role extends AbstractTimestampEntity implements Serializable {
 
-    @Id
-    @GeneratedValue
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    //@Enumerated(EnumType.STRING)
+    private String role;
+    
+    @JsonIgnore
+    @ManyToOne
+	@JoinColumn(name="user_id")
+	User user;
 
     public Role() {}
 
-    public Role(RoleEnum role) {
+    public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Role(String role) {
         this.role = role;
     }
 
    
-
 	public Long getId() {
 		return id;
 	}
@@ -46,11 +66,12 @@ public class Role extends AbstractTimestampEntity implements Serializable{
 		this.id = id;
 	}
 
-	public RoleEnum getRole() {
+	
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(RoleEnum role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
     

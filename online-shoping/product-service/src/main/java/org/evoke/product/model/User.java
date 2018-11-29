@@ -10,10 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -22,7 +20,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 
 @JsonInclude(Include.NON_NULL)
 @Entity
@@ -58,20 +55,15 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	// @Pattern(regexp="(^$|[0-9]{10})")
 	private String contactNumber;
 
-
-	//@NotBlank(message = "Please enter password!")
+	// @NotBlank(message = "Please enter password!")
+	@Column(updatable = false)
 	private String password;
 
-	//@JsonIgnore
-	@NotNull
 	@Size(min = 1, max = 8)
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "user_id", nullable = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Role> roleLst;
 
-	//@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "user_id", nullable = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Address> addressLst;
 
 	@JsonIgnore
@@ -141,6 +133,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	public void setAddressLst(List<Address> addressLst) {
 		this.addressLst = addressLst;
 	}
+
 	public List<Product> getProductLst() {
 		return productLst;
 	}
@@ -155,7 +148,5 @@ public class User extends AbstractTimestampEntity implements Serializable {
 				+ ", contactNumber=" + contactNumber + ", password=" + password + ", roleLst=" + roleLst
 				+ ", addressLst=" + addressLst + ", productLst=" + productLst + "]";
 	}
-
-	
 
 }

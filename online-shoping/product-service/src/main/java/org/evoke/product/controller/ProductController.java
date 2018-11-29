@@ -313,8 +313,8 @@ public class ProductController {
 			List<Role> roleLst = userResponse.getUserLst().get(0).getRoleLst();
 			
 			for(int i=0;i<roleLst.size();i++) {
-				System.out.println("role: "+roleLst.get(i).getRole().getDescription());
-				if(roleLst.get(i).getRole().getDescription().equalsIgnoreCase("Seller"))
+				System.out.println("role: "+roleLst.get(i).getRole());
+				if(roleLst.get(i).getRole().equalsIgnoreCase("Seller"))
 					roleCheck = true;
 			}
 			
