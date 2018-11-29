@@ -352,12 +352,11 @@ public class UserServiceImpl implements UserService {
 		return response;
 	}
 
-	public UserResponse insertAddress(AddressReq adrReq) {
+	public AddressResponse insertAddress(AddressReq adrReq) {
 
-		UserResponse response = null;
-		List<User> lstUser = null;
-
+		AddressResponse response = null;
 		try {
+			List<Address> addressLst = null;
 			session.clear();
 
 			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
@@ -371,10 +370,10 @@ public class UserServiceImpl implements UserService {
 
 			session.flush();
 			System.out.println("User Updated successfully.....!!");
-			response = new UserResponse();
-			lstUser = new ArrayList<User>();
-			lstUser.add(adrReq.getAddress().getUser());
-			response.setUserLst(lstUser);
+			response = new AddressResponse();
+			addressLst = new ArrayList<Address>();
+			addressLst.add(adrReq.getAddress());
+			response.setAddressLst(addressLst);
 
 		} catch (HibernateException e) {
 			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);

@@ -190,14 +190,13 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/addAddress")
-	public UserResponse addAddress(@RequestBody AddressReq adrReq) {
-		UserResponse response = null;
+	public AddressResponse addAddress(@RequestBody AddressReq adrReq) {
+		AddressResponse response = null;
 
-		System.out.println("adrReq..." + adrReq);
-		if (null != adrReq && null != adrReq.getAddress().getUser()) {
+		if (null != adrReq && null != adrReq.getAddress()) {
 			response = userService.insertAddress(adrReq);
 		} else {
-			response = new UserResponse();
+			response = new AddressResponse();
 			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
 			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
 			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
