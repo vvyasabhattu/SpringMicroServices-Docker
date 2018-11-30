@@ -1,18 +1,18 @@
 package org.evoke.product.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.FileUtils;
 import org.evoke.product.error.ErrorCode;
 import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
@@ -37,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
 
 @RestController
 @RequestMapping(value = "/product")
@@ -119,11 +122,9 @@ public class ProductController {
 	
 	@PostMapping("/uploadImg/{product_id}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public ProductResponseList addProductImg(@FormDataParam("file") InputStream inputStream,@PathVariable("product_id") int product_id) {
+	public ProductResponseList addProductImg(@FormDataParam("file") MultipartFile file,@PathVariable("product_id") int product_id) {
 
 		ProductResponseList response = new ProductResponseList();
-		
-		System.out.println(inputStream);
 		
 		  String UPLOADED_FOLDER = null;
 		try {
@@ -140,6 +141,7 @@ public class ProductController {
 		  File theDir = new File(UPLOADED_FOLDER);
 		  File destFile = null;
 		  File srcFile = null;
+		  FileOutputStream out = null;
 
 		// if the directory does not exist, create it
 		   if (!theDir.exists()) {
@@ -147,13 +149,15 @@ public class ProductController {
 		   }
 		   
 		  try {
-	        	if(inputStream!=null) {
+	        	if(file!=null) {
 		            // Get the file and save it .
-		        	destFile = new File(UPLOADED_FOLDER+ product_id + "_image.jpg");
+		        	destFile = new File(UPLOADED_FOLDER+ product_id +"_"+ file.getOriginalFilename());
+		        	srcFile = new File(file.getOriginalFilename());
+		        	file.transferTo(srcFile);
 		        	
-		        	Files.copy(inputStream, destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		        	FileUtils.copyFile(srcFile, destFile);
 	        	}
-		  } catch (IOException e) {
+		  } catch (Exception e) {
 				response.setErrorCode(ErrorCode.IMG_SAVE_ERROR);
 				response.setErrorDesc(ErrorDescription.IMG_SAVE_ERROR);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -161,7 +165,7 @@ public class ProductController {
 				return response;	        
 			}
 	        
-		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+"image.jpg");
+		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+file.getOriginalFilename());
 	}
 	
 
