@@ -152,7 +152,9 @@ public class UserServiceImpl implements UserService {
 				if (null != list && list.size() > 0) {
 					user = list.get(0);
 				}
+				
 				if (null != user) {
+					user.setAddressLst(null);
 					user.setPassword(null);
 					userLst.add(user);
 					response.setUserLst(userLst);
