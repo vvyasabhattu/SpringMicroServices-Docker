@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 
@@ -122,22 +123,12 @@ public class ProductController {
 	
 	@PostMapping("/uploadImg/{product_id}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public ProductResponseList addProductImg(@FormDataParam("file") MultipartFile file,@PathVariable("product_id") int product_id) {
-
+	public ProductResponseList addProductImg(@FormDataParam("file") MultipartFile file,@PathVariable("product_id") int product_id,HttpServletRequest req) {
+		
 		ProductResponseList response = new ProductResponseList();
-		
 		  String UPLOADED_FOLDER = null;
-		try {
-			UPLOADED_FOLDER = getPath();
-		} catch (UnsupportedEncodingException e) {
-			response.setErrorCode(ErrorCode.PATH_ENCODING_ERROR);
-			response.setErrorDesc(ErrorDescription.PATH_ENCODING_ERROR);
-			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-			logger.error(e.getMessage());
-			return response;
-		}
 		
-		  UPLOADED_FOLDER 	=  UPLOADED_FOLDER+sep+"images"+sep;
+		 UPLOADED_FOLDER = req.getServletContext().getRealPath("/")+"images"+sep;; 
 		  File theDir = new File(UPLOADED_FOLDER);
 		  File destFile = null;
 		  File srcFile = null;
@@ -157,7 +148,7 @@ public class ProductController {
 		        	
 		        	FileUtils.copyFile(srcFile, destFile);
 	        	}
-		  } catch (Exception e) {
+		  } catch (IOException e) {
 				response.setErrorCode(ErrorCode.IMG_SAVE_ERROR);
 				response.setErrorDesc(ErrorDescription.IMG_SAVE_ERROR);
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
@@ -285,16 +276,6 @@ public class ProductController {
 		return ps.IsProductExists(productName);
 		
 	}
-	
-	public String getPath() throws UnsupportedEncodingException {
-		String path = this.getClass().getClassLoader().getResource("").getPath();
-		String fullPath = URLDecoder.decode(path, "UTF-8");
-		String pathArr[] = fullPath.split("/target/classes/");
-		System.out.println(fullPath);
-		System.out.println(pathArr[0]);
-		fullPath = pathArr[0];
-		return fullPath;
-		}
 	
 	
 	public ProductResponseList checkUserRole(ProductRequest pRequest,String operation) {
