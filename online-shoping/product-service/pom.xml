@@ -53,6 +53,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-loader -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-loader</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+		
 
 		<dependency>
 			<groupId>mysql</groupId>

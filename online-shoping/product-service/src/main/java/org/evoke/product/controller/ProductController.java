@@ -3,9 +3,6 @@ package org.evoke.product.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -40,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
 
 @RestController
 @RequestMapping(value = "/product")

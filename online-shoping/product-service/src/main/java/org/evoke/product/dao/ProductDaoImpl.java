@@ -109,6 +109,8 @@ public class ProductDaoImpl implements ProductDao {
 				 product_db.setPrice(product.getPrice());
 			 if(product.getProduct_name()!=null)
 				 product_db.setProduct_name(product.getProduct_name());
+			 if(product.getIs_deleted()!=null)
+				 product_db.setIs_deleted(product.getIs_deleted());
 		
 				session.clear();
 				session.update(product_db);

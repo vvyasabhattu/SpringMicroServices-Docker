@@ -34,46 +34,12 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	
 	private String img_path;
 	
+	private String brand;
+	
 	@NotNull
 	private double price ;
 	
 	private String description;
-	
-	//private String specification;
-	
-	//private String reviews;
-	@NotNull
-	private String is_deleted;
-	
-	/**
-	 * @return the is_deleted
-	 */
-	public String getIs_deleted() {
-		return is_deleted;
-	}
-
-	/**
-	 * @param is_deleted the is_deleted to set
-	 */
-	public void setIs_deleted(String is_deleted) {
-		this.is_deleted = is_deleted;
-	}
-
-	/**
-	 * @return the brand
-	 */
-	public String getBrand() {
-		return brand;
-	}
-
-	/**
-	 * @param brand the brand to set
-	 */
-	public void setBrand(String brand) {
-		this.brand = brand;
-	}
-
-	private String brand;
 	
 	@ManyToOne
 	@JoinColumn(name="user_id")
@@ -82,7 +48,30 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@ManyToOne
 	@JoinColumn(name="category_id")
 	private Category category; 
+	
+	//private String specification;
+	
+	//private String reviews;
+	@NotNull
+	private String is_deleted;
+	
+	public String getIs_deleted() {
+		return is_deleted;
+	}
 
+	
+	public void setIs_deleted(String is_deleted) {
+		this.is_deleted = is_deleted;
+	}
+
+	
+	public String getBrand() {
+		return brand;
+	}
+	
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
 
 	public int getProduct_id() {
 		return product_id;
