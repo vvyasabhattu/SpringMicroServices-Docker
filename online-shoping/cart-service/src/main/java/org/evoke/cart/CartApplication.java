@@ -55,7 +55,7 @@ public class CartApplication {
 	@Bean
     public SessionFactory getSessionFactory(){
         LocalSessionFactoryBuilder sessionFactory = new LocalSessionFactoryBuilder(dataSource());
-        sessionFactory.scanPackages("org.evoke.product.model").addProperties(hibernateProperties());
+        sessionFactory.scanPackages("org.evoke.cart.model").addProperties(hibernateProperties());
        
         return sessionFactory.buildSessionFactory();
     }

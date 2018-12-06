@@ -124,7 +124,8 @@ public class ProductController {
 		ProductResponseList response = new ProductResponseList();
 		  String UPLOADED_FOLDER = null;
 		
-		 UPLOADED_FOLDER = req.getServletContext().getRealPath("/")+"images"+sep;; 
+		 UPLOADED_FOLDER = req.getServletContext().getRealPath("/")+"images"+sep;
+		 System.out.println(UPLOADED_FOLDER);
 		  File theDir = new File(UPLOADED_FOLDER);
 		  File destFile = null;
 		  File srcFile = null;
@@ -152,7 +153,7 @@ public class ProductController {
 				return response;	        
 			}
 	        
-		  return ps.updateProductImgPath(product_id,"images"+sep+product_id + "_"+file.getOriginalFilename());
+		  return ps.updateProductImgPath(product_id,"images"+"/"+product_id + "_"+file.getOriginalFilename());
 	}
 	
 
@@ -213,6 +214,7 @@ public class ProductController {
 			catch(Exception e) {
 				response.setErrorCode(ErrorCode.INTERNAL_SERVER_ERROR);
 				response.setErrorDesc(e.getMessage());
+				System.out.println(e.getStackTrace());
 				response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
 				return response;
 			}

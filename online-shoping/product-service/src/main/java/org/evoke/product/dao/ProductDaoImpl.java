@@ -13,7 +13,6 @@ import org.evoke.product.error.ErrorCode;
 import org.evoke.product.error.ErrorDescription;
 import org.evoke.product.error.ErrorType;
 import org.evoke.product.model.BaseResponse;
-import org.evoke.product.model.Category_product;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.ProductResponseList;
