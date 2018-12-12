@@ -374,9 +374,9 @@ public class UserServiceImpl implements UserService {
 			adrReq.getAddress().setUpdatedUser(user.getLastName());
 			
 			Query query = session.createQuery(
-					"FROM User user JOIN FETCH user.addressLst adr");
-			List results = query.list();
+					"FROM User user JOIN FETCH user.addressLst adr where user.id = :id").setParameter("id", adrReq.getAddress().getUser().getId() );
 
+			List results = query.list();
 			if(results.size() <= 0)
 			{
 				adrReq.getAddress().setDefaultAddress("true");
@@ -539,6 +539,7 @@ public class UserServiceImpl implements UserService {
 			String hql = "UPDATE Address W set W.defaultAddress = :defaultAddress " + "where W.user.id = :id";
 			Query query = session.createQuery(hql);
 			query.setParameter("defaultAddress", "false");
+			System.out.println(" adrReq.getAddress(). adrReq.getAddress().getId())1111111"+ adrReq.getAddress().getUser().getId());
 			query.setParameter("id", adrReq.getAddress().getUser().getId());
 			int result = query.executeUpdate();
 			System.out.println("result" + result);
@@ -549,10 +550,12 @@ public class UserServiceImpl implements UserService {
 			String hql1 = "UPDATE Address W set W.defaultAddress = :defaultAddress " + "where W.user.id = :id AND W.id = :id1";
 			Query query1 = session.createQuery(hql1);
 			query1.setParameter("defaultAddress", "true");
+			System.out.println(" adrReq.getAddress().getUser().getId()"+  adrReq.getAddress().getUser().getId());
 			query1.setParameter("id", adrReq.getAddress().getUser().getId());
+			System.out.println(" adrReq.getAddress(). adrReq.getAddress().getId())"+  adrReq.getAddress().getId());
 			query1.setParameter("id1", adrReq.getAddress().getId());
 			int result1 = query1.executeUpdate();
-			System.out.println("result1" + result1);
+			System.out.println("result..." + result1);
 			session.flush();
 			session.clear();
 			
