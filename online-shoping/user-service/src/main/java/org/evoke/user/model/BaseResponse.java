@@ -13,7 +13,6 @@ public class BaseResponse extends ErrorMessage{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@JsonIgnore
 	private Map<String,Object> response;
 
 	public Map<String, Object> getResponse() {

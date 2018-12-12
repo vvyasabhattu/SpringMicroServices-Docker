@@ -277,38 +277,37 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public AddressResponse updateUserAddress(AddressReq adrReq) {
-
 		AddressResponse response = null;
 
-		try {
+	try {
 
-			List<Address> addressLst = null;
+		List<Address> addressLst = null;
 
-			session.clear();
+		session.clear();
 
-			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
-			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
+		adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
+		adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
 
-			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
-			adrReq.getAddress().setCreatedUser(user.getFirstName());
-			adrReq.getAddress().setUpdatedUser(user.getLastName());
+		User user = session.load(User.class, adrReq.getAddress().getUser().getId());
+		adrReq.getAddress().setCreatedUser(user.getFirstName());
+		adrReq.getAddress().setUpdatedUser(user.getLastName());
 
-			session.saveOrUpdate(adrReq.getAddress());
+		session.saveOrUpdate(adrReq.getAddress());
 
-			session.flush();
-			System.out.println("User Updated successfully.....!!");
-			response = new AddressResponse();
-			addressLst = new ArrayList<Address>();
-			addressLst.add(adrReq.getAddress());
-			response.setAddressLst(addressLst);
+		session.flush();
+		System.out.println("User Updated successfully.....!!");
+		response = new AddressResponse();
+		addressLst = new ArrayList<Address>();
+		addressLst.add(adrReq.getAddress());
+		response.setAddressLst(addressLst);
 
-		} catch (Exception e) {
-			System.out.println("Exception while updating User Address ..........." + e);
-			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
-			response.setErrorDesc(e.getMessage());
-			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
-		}
-		return response;
+	} catch (Exception e) {
+		System.out.println("Exception while updating User Address ..........." + e);
+		response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+		response.setErrorDesc(e.getMessage());
+		response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+	}
+	return response;
 	}
 
 	@Override
@@ -373,7 +372,16 @@ public class UserServiceImpl implements UserService {
 			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
 			adrReq.getAddress().setCreatedUser(user.getFirstName());
 			adrReq.getAddress().setUpdatedUser(user.getLastName());
+			
+			Query query = session.createQuery(
+					"FROM User user JOIN FETCH user.addressLst adr");
+			List results = query.list();
 
+			if(results.size() <= 0)
+			{
+				adrReq.getAddress().setDefaultAddress("true");
+			}
+		
 			session.save(adrReq.getAddress());
 
 			session.flush();
@@ -507,6 +515,61 @@ public class UserServiceImpl implements UserService {
 	public AddressResponseLst getAddress(int userId) {
 		
 		return userDao.getAddress(userId);
+	}
+
+	@Override
+	public AddressResponse updateUserDefaultAddress(AddressReq adrReq) {
+
+		AddressResponse response = null;
+
+		try {
+
+			List<Address> addressLst = null;
+
+			session.clear();
+
+			adrReq.getAddress().setCreatedDate(DateUtil.getDDMMYYDate());
+			adrReq.getAddress().setUpdatedDate(DateUtil.getDDMMYYDate());
+
+			User user = session.load(User.class, adrReq.getAddress().getUser().getId());
+			
+			adrReq.getAddress().setCreatedUser(user.getFirstName());
+			adrReq.getAddress().setUpdatedUser(user.getLastName());
+
+			String hql = "UPDATE Address W set W.defaultAddress = :defaultAddress " + "where W.user.id = :id";
+			Query query = session.createQuery(hql);
+			query.setParameter("defaultAddress", "false");
+			query.setParameter("id", adrReq.getAddress().getUser().getId());
+			int result = query.executeUpdate();
+			System.out.println("result" + result);
+			session.evict(user);
+			session.flush();
+			session.clear();
+
+			String hql1 = "UPDATE Address W set W.defaultAddress = :defaultAddress " + "where W.user.id = :id AND W.id = :id1";
+			Query query1 = session.createQuery(hql1);
+			query1.setParameter("defaultAddress", "true");
+			query1.setParameter("id", adrReq.getAddress().getUser().getId());
+			query1.setParameter("id1", adrReq.getAddress().getId());
+			int result1 = query1.executeUpdate();
+			System.out.println("result1" + result1);
+			session.flush();
+			session.clear();
+			
+			System.out.println("User Updated successfully.....!!");
+			response = new AddressResponse();
+			addressLst = new ArrayList<Address>();
+			addressLst.add(adrReq.getAddress());
+			response.setAddressLst(addressLst);
+
+		} catch (Exception e) {
+			System.out.println("Exception while updating User Address ..........." + e);
+			response.setErrorCode(ErrorCode.USER_DETAILS_OBJECT_NOT_FOUND);
+			response.setErrorDesc(e.getMessage());
+			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+		}
+		return response;
+
 	}
 
 }

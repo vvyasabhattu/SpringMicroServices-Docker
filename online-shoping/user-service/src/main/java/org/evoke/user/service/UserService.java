@@ -49,6 +49,7 @@ public interface UserService {
 
     BaseResponse updateUser(User user);
     BaseResponse updateUserAddress(AddressReq addressReq);
+    BaseResponse updateUserDefaultAddress(AddressReq addressReq);
     BaseResponse  updateUserRole(User user);
     BaseResponse insertAddress(AddressReq adr);
 }

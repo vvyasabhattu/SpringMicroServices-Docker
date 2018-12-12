@@ -31,7 +31,6 @@ import org.evoke.user.web.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -170,6 +169,26 @@ public class UserController {
 		return response;
 
 	}
+	
+	@PostMapping(value = "/updateDefaultAddress")
+	public AddressResponse updateUserDefaultAddress(@RequestBody AddressReq request) {
+
+		AddressResponse response = null;
+
+		if (null != request && null != request.getAddress()) {
+
+			response = userService.updateUserDefaultAddress(request);
+		} else {
+			response = new AddressResponse();
+			response.setErrorCode(ErrorCode.USER_NOT_FOUND);
+			response.setErrorDesc(ErrorDescription.USER_NOT_FOUND);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+
+		return response;
+
+	}
 
 	@PostMapping(value = "/updateRole")
 	public UserResponse updateRole(@RequestBody LoginRequest request) {
@@ -207,12 +226,12 @@ public class UserController {
 		return response;
 	}
 
-	@DeleteMapping(value = "/deleteAddress")
+	@PostMapping(value = "/deleteAddress")
 	public BaseResponse deleteAddress(@RequestBody AddressReq adrReq) {
 		return userService.deleteAddress(adrReq);
 	}
 
-	@DeleteMapping(value = "/deleteUser")
+	@PostMapping(value = "/deleteUser")
 	public BaseResponse deleteUser(@RequestBody LoginRequest request) {
 		return userService.deleteUser(request.getUser());
 

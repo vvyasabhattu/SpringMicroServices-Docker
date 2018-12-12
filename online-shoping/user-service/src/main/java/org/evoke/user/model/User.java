@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "user")
+@DynamicUpdate(true)
 public class User extends AbstractTimestampEntity implements Serializable {
 
 	/**
@@ -70,13 +72,7 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	@OneToMany(mappedBy = "user")
 	private List<Product> productLst;
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 
 	public String getFirstName() {
 		return firstName;
@@ -149,4 +145,11 @@ public class User extends AbstractTimestampEntity implements Serializable {
 				+ ", addressLst=" + addressLst + ", productLst=" + productLst + "]";
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 }
