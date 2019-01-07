@@ -1,4 +1,4 @@
-package org.evoke.product.error;
+package org.evoke.cart.error;
 
 import java.io.Serializable;
 

@@ -20,27 +20,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author mdenning
  */
 
-@JsonInclude(Include.NON_NULL)
-@Entity
-@Table(name = "role")
 public class Role extends AbstractTimestampEntity implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    //@Enumerated(EnumType.STRING)
     private String role;
     
-    @JsonIgnore
-    @ManyToOne
-	@JoinColumn(name="user_id")
 	User user;
 
     public Role() {}

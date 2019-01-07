@@ -26,8 +26,7 @@ public class Category implements Serializable {
 	
 	private String category_name;
 	
-	/*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "category_id", nullable = false)*/
+	
 	@OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Product> productLst;

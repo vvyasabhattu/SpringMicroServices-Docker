@@ -28,6 +28,22 @@ public class ProductResponse {
 	
 	private String description;
 	
+	private int qty;
+	
+	/**
+	 * @return the qty
+	 */
+	public int getQty() {
+		return qty;
+	}
+
+	/**
+	 * @param qty the qty to set
+	 */
+	public void setQty(int qty) {
+		this.qty = qty;
+	}
+
 	/**
 	 * @return the is_deleted
 	 */

@@ -2,8 +2,10 @@ package org.evoke.cart.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 //import javax.persistence.ForeignKey;
@@ -16,28 +18,34 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(Include.NON_NULL)
-@Entity
-@DynamicUpdate
+
 public class Address extends AbstractTimestampEntity implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column
 	private String city;
 
-	@Column
 	private String state;
 
-	@Column
 	private String country;
+
+	public String getDefaultAddress() {
+		return defaultAddress;
+	}
+
+	public void setDefaultAddress(String defaultAddress) {
+		this.defaultAddress = defaultAddress;
+	}
+
+	public String getAddressTag() {
+		return addressTag;
+	}
+
+	public void setAddressTag(String addressTag) {
+		this.addressTag = addressTag;
+	}
 
 	@Column
 	private int pincode;
@@ -46,6 +54,11 @@ public class Address extends AbstractTimestampEntity implements Serializable {
 	private String addrLine1;
 	@Column
 	private String addrLine2;
+	
+	@Column
+	private String defaultAddress;
+	@Column
+	private String addressTag;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")

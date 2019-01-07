@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author mdenning
  */
 
-@JsonInclude(Include.NON_NULL)
-@Entity
-@Table(name = "role")
+
 public class Role extends AbstractTimestampEntity implements Serializable {
 
     /**

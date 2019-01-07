@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(Include.NON_NULL)
-@Entity
-@Table(name = "user")
+
 public class User extends AbstractTimestampEntity implements Serializable {
 
 	/**
@@ -31,44 +29,23 @@ public class User extends AbstractTimestampEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
+	
 	private int id;
-
-	@NotBlank(message = "Please enter first name!")
-	@Column(name = "first_name")
+	
 	private String firstName;
 
-	@NotBlank(message = "Please enter last name!")
-	@Column(name = "last_name")
 	private String lastName;
 
-	@NotBlank(message = "Please enter email address!")
-	@Email
-	@Column(unique = true)
 	private String email;
 
-	@NotBlank(message = "Please enter contact number!")
-	@Column(name = "contact_number")
-	@Size(min = 10, max = 10)
-	// @Pattern(regexp="(^$|[0-9]{10})")
 	private String contactNumber;
 
-	// @NotBlank(message = "Please enter password!")
-	@Column(updatable = false)
 	private String password;
 
-	@Size(min = 1, max = 8)
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Role> roleLst;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Address> addressLst;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "user")
-	private List<Product> productLst;
 
 	public int getId() {
 		return id;
@@ -134,19 +111,13 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		this.addressLst = addressLst;
 	}
 
-	public List<Product> getProductLst() {
-		return productLst;
-	}
-
-	public void setProductLst(List<Product> productLst) {
-		this.productLst = productLst;
-	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", contactNumber=" + contactNumber + ", password=" + password + ", roleLst=" + roleLst
-				+ ", addressLst=" + addressLst + ", productLst=" + productLst + "]";
+				+ ", contactNumber=" + contactNumber + ", password=" + password + "]";
 	}
 
 }

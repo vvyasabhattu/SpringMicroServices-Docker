@@ -1,4 +1,4 @@
-package org.evoke.product.error;
+package org.evoke.cart.error;
 
 public interface ErrorCode {
 
@@ -18,5 +18,6 @@ public interface ErrorCode {
 	int DB_ERROR = 1012;
 	int IMG_SAVE_ERROR = 1013;
 	int PRODUCT_RESPONSE_MAPPING_ERROR = 1014;
+	int invalid_input_paramater = 1016;
 	//int PRODUCT_NOT_VALID 
 }

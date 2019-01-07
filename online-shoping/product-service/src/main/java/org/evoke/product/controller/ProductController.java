@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -57,42 +56,13 @@ public class ProductController {
     private ServletContext servletContext;
 	
 	String sep = File.separator;
+	boolean roleCheck = false;
 
-	@GetMapping("/check")
-	public void getCheck() throws RestClientException, IOException {
-
-		try {
-			String str = userService.getCheck();
-			System.out.println(str);
-		} catch (Exception ex) {
-			System.out.println(ex);
-		}
-	}
-
-	@GetMapping("/loginUser")
-	public UserResponse getLoginUser() throws RestClientException, IOException {
-
-		UserResponse response = null;
-		try {
-
-			User user = new User();
-			user.setEmail("string@email.com");
-			user.setPassword("password");
-			LoginRequest loginRequest = new LoginRequest();
-			loginRequest.setUser(user);
-			response = userService.loginUser(loginRequest);
-
-		} catch (Exception ex) {
-			System.out.println(ex);
-		}
-		return response;
-	}
 
 	@PostMapping("/add")
 	public ProductResponseList add(@RequestBody ProductRequest pRequest) {
 		
 		ProductResponseList response = new ProductResponseList();
-		UserResponse userResponse = null; 
 		boolean roleCheck = false;
 		
 		try {
@@ -161,7 +131,6 @@ public class ProductController {
 	public ProductResponseList update(@RequestBody ProductRequest pRequest) {
 
 		ProductResponseList response = new ProductResponseList();
-		UserResponse userResponse = null; 
 		
 		try {
 			
@@ -188,7 +157,6 @@ public class ProductController {
 	public @ResponseBody ProductResponseList delete(@RequestBody ProductRequest pRequest){
 		
 		ProductResponseList response = new ProductResponseList();
-		UserResponse userResponse = null; 
 		
 		try {
 				return checkUserRole(pRequest, "delete");
@@ -277,12 +245,22 @@ public class ProductController {
 	
 	
 	public ProductResponseList checkUserRole(ProductRequest pRequest,String operation) {
-	
+		
 		UserResponse userResponse= null;
 		ProductResponseList response = new ProductResponseList();
 		boolean roleCheck = false;
+		User user = null;
 		
-		User user =pRequest.getProduct().getUser();			
+		if(pRequest.getProduct().getUser_id()!=0) {
+			user=new User();
+			user.setId(pRequest.getProduct().getUser_id());	
+		}else {
+			response.setErrorCode(ErrorCode.USER_ID_NOT_FOUND_IN_REQUEST);
+			response.setErrorDesc(ErrorDescription.USER_ID_NOT_FOUND_IN_REQUEST);
+			response.setErrorType(ErrorType.APPLICATION_PRACTICE_ERROR);
+			return response;
+		}
+		
 		LoginRequest loginRequest = new LoginRequest();
 		loginRequest.setUser(user);
 		userResponse = userService.getUser(loginRequest);
@@ -298,12 +276,14 @@ public class ProductController {
 			}
 			
 			if(roleCheck==true) {
-				pRequest.getProduct().setUser(userResponse.getUserLst().get(0));
+				
+				user = userResponse.getUserLst().get(0);
+				pRequest.getProduct().setUser_id(userResponse.getUserLst().get(0).getId());
 				
 				if(operation.equals("insert"))
-				 response = ps.addProduct(pRequest);
+				 response = ps.addProduct(pRequest,user);
 				else if (operation.equals("update"))
-					response=ps.updateProduct(pRequest);
+					response=ps.updateProduct(pRequest,user);
 				else if(operation.equals("delete"))
 					response = ps.deleteProduct(pRequest);
 					

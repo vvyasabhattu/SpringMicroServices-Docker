@@ -1,125 +1,85 @@
 package org.evoke.cart.model;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "order_items")
-public class OrderItems extends AbstractTimestampEntity implements Serializable{
+@DynamicUpdate
+public class OrderItems {
+
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int order_item_id;
+	private int id;
 	
-	@OneToOne
-	private Product product;
+	private int order_id;
 	
-	@Column
-	//@NotNull
-	private int qty;
-	
-	@Column
-	//@NotNull
-	private double total_price;
-	
-	private String status;
-	
+	private String product;
+	 
+	private String  qty;
+
 	/**
-	 * @return the status
+	 * @return the id
 	 */
-	public String getStatus() {
-		return status;
+	public int getId() {
+		return id;
 	}
 
 	/**
-	 * @param status the status to set
+	 * @param id the id to set
 	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	@ManyToOne
-	@JoinColumn(name="order_id")
-	private Order order;
-
-	/**
-	 * @return the order_item_id
-	 */
-	public int getOrder_item_id() {
-		return order_item_id;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**
-	 * @param order_item_id the order_item_id to set
+	 * @return the order_id
 	 */
-	public void setOrder_item_id(int order_item_id) {
-		this.order_item_id = order_item_id;
+	public int getOrder_id() {
+		return order_id;
+	}
+
+	/**
+	 * @param order_id the order_id to set
+	 */
+	public void setOrder_id(int order_id) {
+		this.order_id = order_id;
 	}
 
 	/**
 	 * @return the product
 	 */
-	public Product getProduct() {
+	public String getProduct() {
 		return product;
 	}
 
 	/**
 	 * @param product the product to set
 	 */
-	public void setProduct(Product product) {
+	public void setProduct(String product) {
 		this.product = product;
 	}
 
 	/**
 	 * @return the qty
 	 */
-	public int getQty() {
+	public String getQty() {
 		return qty;
 	}
 
 	/**
 	 * @param qty the qty to set
 	 */
-	public void setQty(int qty) {
+	public void setQty(String qty) {
 		this.qty = qty;
 	}
-
-	/**
-	 * @return the total_price
-	 */
-	public double getTotal_price() {
-		return total_price;
-	}
-
-	/**
-	 * @param total_price the total_price to set
-	 */
-	public void setTotal_price(double total_price) {
-		this.total_price = total_price;
-	}
-
-	/**
-	 * @return the order
-	 */
-	public Order getOrder() {
-		return order;
-	}
-
-	/**
-	 * @param order the order to set
-	 */
-	public void setOrder(Order order) {
-		this.order = order;
-	}
+	
+	
 	
 }

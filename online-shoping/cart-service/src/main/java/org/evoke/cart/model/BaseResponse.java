@@ -2,7 +2,7 @@ package org.evoke.cart.model;
 
 import java.util.Map;
 
-import org.evoke.product.error.ErrorMessage;
+import org.evoke.cart.error.ErrorMessage;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

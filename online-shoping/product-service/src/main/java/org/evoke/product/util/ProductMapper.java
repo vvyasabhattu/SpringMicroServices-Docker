@@ -5,7 +5,6 @@ import java.util.List;
 import org.evoke.product.model.Category;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
-import org.evoke.product.model.User;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -33,13 +32,14 @@ public class ProductMapper {
 			productResponse.setDescription(product.getDescription());
 			productResponse.setPrice(product.getPrice());
 			productResponse.setBrand(product.getBrand());
+			productResponse.setQty(product.getQty());
 			productResponse.setIs_deleted(product.getIs_deleted());
 			
 			category = session.get(Category.class, product.getCategory().getCategory_id());
 			
 			productResponse.setCategory(category);
 			productResponse.setImg_path(product.getImg_path());
-			productResponse.setSeller_id(product.getUser().getId());
+			productResponse.setSeller_id(product.getUser_id());
 			
 			productResponses.add(productResponse);
 			

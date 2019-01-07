@@ -18,5 +18,7 @@ public interface ErrorCode {
 	int DB_ERROR = 1012;
 	int IMG_SAVE_ERROR = 1013;
 	int PRODUCT_RESPONSE_MAPPING_ERROR = 1014;
+	int USER_ID_NOT_FOUND_IN_REQUEST =1015;
+	int invalid_argument = 1016;
 	//int PRODUCT_NOT_VALID 
 }

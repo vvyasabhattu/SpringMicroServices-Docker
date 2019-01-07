@@ -39,12 +39,28 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@NotNull
 	private double price ;
 	
+	@NotNull
 	private String description;
 	
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
+	@NotNull
+	private int user_id;
 	
+	/**
+	 * @return the user_id
+	 */
+	public int getUser_id() {
+		return user_id;
+	}
+
+
+	/**
+	 * @param user_id the user_id to set
+	 */
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
+	}
+
+
 	@ManyToOne
 	@JoinColumn(name="category_id")
 	private Category category; 
@@ -54,6 +70,8 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	//private String reviews;
 	@NotNull
 	private String is_deleted;
+	
+	private int qty;
 	
 	public String getIs_deleted() {
 		return is_deleted;
@@ -114,13 +132,6 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 		this.description = description;
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
 
 	public Category getCategory() {
 		return category;
@@ -129,6 +140,22 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+	
+	/**
+	 * @return the qty
+	 */
+	public int getQty() {
+		return qty;
+	}
+
+
+	/**
+	 * @param qty the qty to set
+	 */
+	public void setQty(int qty) {
+		this.qty = qty;
+	}
+
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -136,9 +163,10 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 	@Override
 	public String toString() {
 		return "Product [product_id=" + product_id + ", product_name=" + product_name + ", img_path=" + img_path
-				+ ", price=" + price + ", description=" + description + ", is_deleted=" + is_deleted + ", brand="
-				+ brand + "]";
+				+ ", brand=" + brand + ", price=" + price + ", description=" + description + ", user_id=" + user_id
+				+ ", is_deleted=" + is_deleted + ", qty=" + qty + "]";
 	}
+
 
 
 }

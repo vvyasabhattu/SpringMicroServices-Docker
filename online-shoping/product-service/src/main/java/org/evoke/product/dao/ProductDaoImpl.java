@@ -16,7 +16,6 @@ import org.evoke.product.model.BaseResponse;
 import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.ProductResponseList;
-import org.evoke.product.model.User;
 import org.evoke.product.util.DateUtil;
 import org.evoke.product.util.ProductMapper;
 import org.hibernate.Criteria;
@@ -56,20 +55,13 @@ public class ProductDaoImpl implements ProductDao {
 	public ProductResponseList addProduct(Product product) {
     	
     	ProductResponseList response = new ProductResponseList();
-    	
-		product.setCreatedUser(product.getUser().getFirstName());
-		product.setUpdatedUser(product.getUser().getFirstName());
-		product.setCreatedDate(DateUtil.getDDMMYYDate());
-		product.setUpdatedDate(DateUtil.getDDMMYYDate());
-		product.setIs_deleted("no");
-		
 		
 		int id = (int) session.save(product);
 		//session.flush();
-		session.evict(product);
+		//session.evict(product);
 		
 		try {
-		product.setProduct_id(id);
+		//product.setProduct_id(id);
 		List<Product> productList = new ArrayList<Product>() ;
 		productList.add(product);
 		return MapProductResponse(productList);
@@ -85,9 +77,6 @@ public class ProductDaoImpl implements ProductDao {
     @Override
 	public ProductResponseList updateProduct(Product product) {
 
-		product.setUpdatedUser(product.getUser().getFirstName());
-		product.setUpdatedDate(DateUtil.getDDMMYYDate());
-		
 		 product_db = session.get(Product.class,product.getProduct_id());
 		
 		 if(product_db==null) {
@@ -110,6 +99,8 @@ public class ProductDaoImpl implements ProductDao {
 				 product_db.setProduct_name(product.getProduct_name());
 			 if(product.getIs_deleted()!=null)
 				 product_db.setIs_deleted(product.getIs_deleted());
+			 if(product.getQty()!=0)
+				 product_db.setQty(product.getQty());
 		
 				session.clear();
 				session.update(product_db);

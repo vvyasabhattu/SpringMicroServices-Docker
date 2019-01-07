@@ -16,39 +16,24 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(Include.NON_NULL)
-@Entity
-@DynamicUpdate
 public class Address extends AbstractTimestampEntity implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column
 	private String city;
 
-	@Column
 	private String state;
 
-	@Column
 	private String country;
 
-	@Column
 	private int pincode;
 
-	@Column
 	private String addrLine1;
-	@Column
+
 	private String addrLine2;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
 	User user;
 
 	public User getUser() {

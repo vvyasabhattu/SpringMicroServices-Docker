@@ -1,98 +1,89 @@
 package org.evoke.cart.model;
 
-import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 @Entity
-@Table(name = "order_table")
-public class Order extends AbstractTimestampEntity implements Serializable{
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int order_id;
-	
-    @OneToMany(cascade=CascadeType.ALL)
-    @JoinColumn(name="order_id")
-	private List<OrderItems> orderItems;
-	
-	private String status;
-	
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
+@Table(name = "order")
+@DynamicUpdate
+public class Order {
+		@Id
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		private int id;
+		
+		@Column(name = "user_id")
+		private int userId;
+		
+		@Column
+		private String status;
 
-	/**
-	 * @return the order_id
-	 */
-	public int getOrder_id() {
-		return order_id;
-	}
+		@OneToMany
+		private List<OrderItems> orderItems;
 
-	/**
-	 * @param order_id the order_id to set
-	 */
-	public void setOrder_id(int order_id) {
-		this.order_id = order_id;
-	}
+		/**
+		 * @return the id
+		 */
+		public int getId() {
+			return id;
+		}
 
-	/**
-	 * @return the orderItems
-	 */
-	public List<OrderItems> getOrderItems() {
-		return orderItems;
-	}
+		/**
+		 * @param id the id to set
+		 */
+		public void setId(int id) {
+			this.id = id;
+		}
 
-	/**
-	 * @param orderItems the orderItems to set
-	 */
-	public void setOrderItems(List<OrderItems> orderItems) {
-		this.orderItems = orderItems;
-	}
+		/**
+		 * @return the userId
+		 */
+		public int getUserId() {
+			return userId;
+		}
 
-	/**
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
+		/**
+		 * @param userId the userId to set
+		 */
+		public void setUserId(int userId) {
+			this.userId = userId;
+		}
 
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
+		/**
+		 * @return the status
+		 */
+		public String getStatus() {
+			return status;
+		}
 
-	/**
-	 * @return the user
-	 */
-	public User getUser() {
-		return user;
-	}
+		/**
+		 * @param status the status to set
+		 */
+		public void setStatus(String status) {
+			this.status = status;
+		}
 
-	/**
-	 * @param user the user to set
-	 */
-	public void setUser(User user) {
-		this.user = user;
-	}
+		/**
+		 * @return the orderItems
+		 */
+		public List<OrderItems> getOrderItems() {
+			return orderItems;
+		}
 
-	
-	@Override
-	public String toString() {
-		return "Order [order_id=" + order_id + ", status=" + status + "]";
-	}
-	
-
-
+		/**
+		 * @param orderItems the orderItems to set
+		 */
+		public void setOrderItems(List<OrderItems> orderItems) {
+			this.orderItems = orderItems;
+		}
+		
+		
 }

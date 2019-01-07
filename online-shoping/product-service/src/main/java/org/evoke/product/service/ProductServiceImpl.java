@@ -1,18 +1,12 @@
 package org.evoke.product.service;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.evoke.product.dao.ProductDaoImpl;
-import org.evoke.product.model.BaseResponse;
-import org.evoke.product.model.Product;
 import org.evoke.product.model.ProductRequest;
-import org.evoke.product.model.ProductResponse;
 import org.evoke.product.model.ProductResponseList;
+import org.evoke.product.model.User;
+import org.evoke.product.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -22,10 +16,16 @@ public class ProductServiceImpl implements ProductService {
 	
 	  
 	 @Override
-	 public ProductResponseList addProduct(ProductRequest pr) {
+	 public ProductResponseList addProduct(ProductRequest pr,User user) {
 		  
 		 ProductResponseList baseResponse  = null;
 		 if(null != pr  && null != pr.getProduct() ) {
+			 
+			 pr.getProduct().setCreatedUser(user.getFirstName());
+			 pr.getProduct().setUpdatedUser(user.getFirstName());
+			 pr.getProduct().setCreatedDate(DateUtil.getDDMMYYDate());
+			 pr.getProduct().setUpdatedDate(DateUtil.getDDMMYYDate());
+			 pr.getProduct().setIs_deleted("no");
 			 baseResponse =  productDao.addProduct(pr.getProduct());
 		 }
 		   return baseResponse;
@@ -34,10 +34,12 @@ public class ProductServiceImpl implements ProductService {
 	 
 	 
 	 @Override
-		public ProductResponseList updateProduct(ProductRequest pr) {
+		public ProductResponseList updateProduct(ProductRequest pr,User user) {
 			 
 			ProductResponseList baseResponse  = null;
 			 if(null != pr  && null != pr.getProduct() ) {
+				 pr.getProduct().setUpdatedUser(user.getFirstName());
+				 pr.getProduct().setUpdatedDate(DateUtil.getDDMMYYDate());
 				 baseResponse =  productDao.updateProduct(pr.getProduct());
 			 }
 			   return baseResponse;

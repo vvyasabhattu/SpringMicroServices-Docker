@@ -14,4 +14,5 @@ public interface ErrorDescription {
 	String INVALID_USER = "Invalid User role ";
 	String PATH_ENCODING_ERROR = "Error in getting web app path";
 	String IMG_SAVE_ERROR = "Error in saving image";
+	String USER_ID_NOT_FOUND_IN_REQUEST = "User id not found in request";
 }

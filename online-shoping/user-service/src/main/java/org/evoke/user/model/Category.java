@@ -16,20 +16,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
-@Table(name="category")
 public class Category implements Serializable {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int category_id;
 	
 	private String category_name;
 	
-	/*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "category_id", nullable = false)*/
-	@JsonIgnore
-	@OneToMany(mappedBy = "category")
 	private List<Product> productLst;
 	
 

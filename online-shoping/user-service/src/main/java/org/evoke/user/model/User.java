@@ -67,12 +67,8 @@ public class User extends AbstractTimestampEntity implements Serializable {
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Address> addressLst;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "user")
-	private List<Product> productLst;
-
 	
+	private int product_id;
 
 	public String getFirstName() {
 		return firstName;
@@ -130,19 +126,18 @@ public class User extends AbstractTimestampEntity implements Serializable {
 		this.addressLst = addressLst;
 	}
 
-	public List<Product> getProductLst() {
-		return productLst;
+	/**
+	 * @return the product_id
+	 */
+	public int getProduct_id() {
+		return product_id;
 	}
 
-	public void setProductLst(List<Product> productLst) {
-		this.productLst = productLst;
-	}
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", contactNumber=" + contactNumber + ", password=" + password + ", roleLst=" + roleLst
-				+ ", addressLst=" + addressLst + ", productLst=" + productLst + "]";
+	/**
+	 * @param product_id the product_id to set
+	 */
+	public void setProduct_id(int product_id) {
+		this.product_id = product_id;
 	}
 
 	public int getId() {

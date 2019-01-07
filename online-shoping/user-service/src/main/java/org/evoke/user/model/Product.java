@@ -14,75 +14,54 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 
-@Entity
-@Table(name = "product")
-@DynamicUpdate
+
 public class Product extends AbstractTimestampEntity implements Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	private int product_id;
 	
-	@Column(unique = true)
-	@NotNull
 	private String product_name;
 	
 	private String img_path;
 	
-	@NotNull
+	private String brand;
+	
 	private double price ;
 	
 	private String description;
 	
+	private User user;
+	
+	private Category category; 
+	
 	//private String specification;
 	
 	//private String reviews;
-	@NotNull
 	private String is_deleted;
 	
-	/**
-	 * @return the is_deleted
-	 */
+	private int qty;
+	
 	public String getIs_deleted() {
 		return is_deleted;
 	}
 
-	/**
-	 * @param is_deleted the is_deleted to set
-	 */
+	
 	public void setIs_deleted(String is_deleted) {
 		this.is_deleted = is_deleted;
 	}
 
-	/**
-	 * @return the brand
-	 */
+	
 	public String getBrand() {
 		return brand;
 	}
-
-	/**
-	 * @param brand the brand to set
-	 */
+	
 	public void setBrand(String brand) {
 		this.brand = brand;
 	}
-
-	private String brand;
-	
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
-	
-	@ManyToOne
-	@JoinColumn(name="category_id")
-	private Category category; 
-
 
 	public int getProduct_id() {
 		return product_id;
@@ -141,14 +120,33 @@ public class Product extends AbstractTimestampEntity implements Serializable{
 		this.category = category;
 	}
 
+	
+	
+	/**
+	 * @return the qty
+	 */
+	public int getQty() {
+		return qty;
+	}
+
+
+	/**
+	 * @param qty the qty to set
+	 */
+	public void setQty(int qty) {
+		this.qty = qty;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "Product [product_id=" + product_id + ", product_name=" + product_name + ", img_path=" + img_path
-				+ ", price=" + price + ", description=" + description + ", is_deleted=" + is_deleted + ", brand="
-				+ brand + "]";
+				+ ", brand=" + brand + ", price=" + price + ", description=" + description + ", is_deleted="
+				+ is_deleted + ", qty=" + qty + "]";
 	}
+
 
 }
