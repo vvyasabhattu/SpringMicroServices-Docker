@@ -5,6 +5,7 @@ import java.util.List;
 import org.evoke.cart.model.CartItem;
 import org.evoke.cart.model.CartItemRequest;
 import org.evoke.cart.model.CartItemResponse;
+import org.evoke.cart.model.CartItemResponseList;
 import org.evoke.cart.service.CartService;
 import org.evoke.cart.util.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class CartController {
 	
 	
 	@GetMapping("/getAllCartItemsByUser/{user_id}")
-	public CartItemResponse getAllCartItems(@PathVariable int user_id){
+	public CartItemResponseList getAllCartItems(@PathVariable int user_id){
 		
 		return cartService.getAllCartItems(user_id);
 	}

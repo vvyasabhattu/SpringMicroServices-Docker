@@ -4,21 +4,22 @@ import java.util.List;
 
 public class CartItemResponseList extends BaseResponse{
 	
-	private CartItemResponse cartItemResponse;
+	private List<CartItemResponse> cartItemResponse;
 
 	/**
 	 * @return the cartItemResponse
 	 */
-	public CartItemResponse getCartItemResponse() {
+	public List<CartItemResponse> getCartItemResponse() {
 		return cartItemResponse;
 	}
 
 	/**
 	 * @param cartItemResponse the cartItemResponse to set
 	 */
-	public void setCartItemResponse(CartItemResponse cartItemResponse) {
+	public void setCartItemResponse(List<CartItemResponse> cartItemResponse) {
 		this.cartItemResponse = cartItemResponse;
 	}
+
 	
 	
 

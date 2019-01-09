@@ -85,13 +85,14 @@ public class CartService {
 	}
 	
 		
-	public CartItemResponse getAllCartItems(int user_id) {
+	public CartItemResponseList getAllCartItems(int user_id) {
 		
 		CartItemResponse  cartItemResponse = null;
 		CartItemResponseList cartItemResponseList = new CartItemResponseList();
 		ProductResponseList prs = null;
 		List<CartItem> cartItemList  = cartRepository.findByUserIdAndStatus(user_id,"In Cart");
-		
+		List<CartItemResponse> cartItemResponseLst = new ArrayList<CartItemResponse>();
+ 		
 		for(CartItem cartItem:cartItemList) {
 			cartItemResponse = new CartItemResponse();
 			prs = productService.getProductById(cartItem.getProduct_id());
@@ -99,11 +100,12 @@ public class CartService {
 			cartItemResponse.setImg_path(prs.getProductResponse().get(0).getImg_path());
 			cartItemResponse.setPrice(prs.getProductResponse().get(0).getPrice());
 			cartItemResponse.setProduct_name(prs.getProductResponse().get(0).getProduct_name());
-			cartItemResponseList.setCartItemResponse(cartItemResponse);
+			cartItemResponseLst.add(cartItemResponse);
 		}
 		
+		cartItemResponseList.setCartItemResponse(cartItemResponseLst);
 		
-		 return cartItemResponse;
+		 return cartItemResponseList;
 		//return  new ResponseEntity<cartItemResponse>(cartItemResponse,HttpStatus.OK);
 		
 	}
