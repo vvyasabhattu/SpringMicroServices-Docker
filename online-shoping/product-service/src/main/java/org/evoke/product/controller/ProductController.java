@@ -81,6 +81,7 @@ public class ProductController {
 			response.setErrorCode(ErrorCode.PRODUCT_NOT_VALID);
 			response.setErrorDesc(e.getMessage());
 			response.setErrorType(ErrorType.APPLICATION_BUSINESS_ERROR);
+			System.out.println(e.getStackTrace());
 			return response;
 		}
 

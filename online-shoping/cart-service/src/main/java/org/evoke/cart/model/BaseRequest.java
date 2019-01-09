@@ -1,7 +1,6 @@
 package org.evoke.cart.model;
 
 import java.io.Serializable;
-import java.util.Map;
 
 public class BaseRequest implements Serializable{
 

@@ -1,4 +1,4 @@
-package org.evoke.cart;
+package org.order.service;
 
 import java.util.Properties;
 
@@ -30,13 +30,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @SpringBootApplication
 @EnableFeignClients
 @PropertySource("classpath:application.properties")
-public class CartApplication {
+public class OrderApplication {
 
 	@Autowired
 	private Environment env;
 	
 	public static void main(String[] args) {
-		SpringApplication.run(CartApplication.class, args);
+		SpringApplication.run(OrderApplication.class, args);
 	}
 
 	@Bean("transactionManager")
@@ -55,7 +55,7 @@ public class CartApplication {
 	@Bean
     public SessionFactory getSessionFactory(){
         LocalSessionFactoryBuilder sessionFactory = new LocalSessionFactoryBuilder(dataSource());
-        sessionFactory.scanPackages("org.evoke.cart.model").addProperties(hibernateProperties());
+        sessionFactory.scanPackages("org.evoke.order.model").addProperties(hibernateProperties());
        
         return sessionFactory.buildSessionFactory();
     }
@@ -76,7 +76,7 @@ public class CartApplication {
 		properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
 		properties.put("hibernate.show_sql", true);
 		properties.put("hibernate.format_sql", true);
-		properties.put("hibernate.hbm2ddl.auto", "update");
+		properties.put("hibernate.hbm2ddl.auto", "create");
 		return properties;
 	}
 

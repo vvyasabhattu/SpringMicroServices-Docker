@@ -44,6 +44,9 @@ zuul:
     product-by-service:
       path: /product-by-service/**
       serviceId: PRODUCT-SERVICE
+    cart-by-service:
+      path: /cart-by-service/**
+      serviceId: CART-SERVICE
     static:
       path: /static/**
 

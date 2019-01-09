@@ -6,12 +6,13 @@ import java.util.List;
 import org.evoke.cart.model.CartItem;
 import org.evoke.cart.model.CartItemRequest;
 import org.evoke.cart.model.CartItemResponse;
+import org.evoke.cart.model.CartItemResponseList;
+import org.evoke.cart.model.ProductResponseList;
 import org.evoke.cart.repository.CartRepository;
 import org.evoke.cart.util.DateUtil;
+import org.evoke.cart.util.ProductService;
 import org.evoke.cart.util.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +24,10 @@ public class CartService {
 	@Autowired
 	private UserService userService;
 	
-	public CartItemResponse addToCart(CartItemRequest cartItemReq) {
+	@Autowired
+	private ProductService productService;
+	
+	public CartItem addToCart(CartItemRequest cartItemReq) {
 		
 		/*if(pRequest.getProduct().getUser_id()!=0) {
 			user=new User();
@@ -48,14 +52,9 @@ public class CartService {
 		
 		cartItemReq.getCartItem().setCreatedDate(DateUtil.getDDMMYYDate());
 		cartItemReq.getCartItem().setUpdatedDate(DateUtil.getDDMMYYDate());
-		cartItemReq.getCartItem().setCreatedUser("");
+		cartItemReq.getCartItem().setCreatedUser("");  //should get these details either in the UI request or by communicating with user-service
 		cartItemReq.getCartItem().setUpdatedUser("");
-		
-		CartItemResponse  cartItemResponse = new CartItemResponse();
-		List<CartItem> cartItemResponseList  = new ArrayList<CartItem>();
-		cartItemResponseList.add(cartRepository.save(cartItemReq.getCartItem()));
-		 cartItemResponse.setCartItem(cartItemResponseList);
-		 return cartItemResponse;
+		return cartRepository.save(cartItemReq.getCartItem());  //this method return type should be changed to CartItemResponse
 		
 		/*}
 		else {
@@ -66,19 +65,16 @@ public class CartService {
 		}*/
 	}
 	
-	public CartItemResponse updateCartItems(CartItemRequest cartItemReq) {
+	public CartItem updateCartItems(CartItemRequest cartItemReq) {//should send entire object(including created_date....) in the req.
 		
-		CartItemResponse  cartItemResponse = new CartItemResponse();
-		List<CartItem> cartItemResponseList  = new ArrayList<CartItem>();
-		cartItemResponseList.add(cartRepository.save(cartItemReq.getCartItem()));
-		 cartItemResponse.setCartItem(cartItemResponseList);
-		 return cartItemResponse;
+		cartItemReq.getCartItem().setUpdatedDate(DateUtil.getDDMMYYDate());
+		return cartRepository.save(cartItemReq.getCartItem());
 		
 	}
 	
-	public void deleteCartItems(CartItemRequest cartItemReq) {
+	public void deleteCartItems(int id) {
 		
-			cartRepository.delete(cartItemReq.getCartItem().getId());
+			cartRepository.delete(id);
 		/*
 		CartItemResponse  cartItemResponse = new CartItemResponse();
 		List<CartItem> cartItemResponseList  = new ArrayList<CartItem>();
@@ -91,15 +87,26 @@ public class CartService {
 		
 	public CartItemResponse getAllCartItems(int user_id) {
 		
-		CartItemResponse  cartItemResponse = new CartItemResponse();
-		List<CartItem> cartItemResponseList  = cartRepository.findByUserId(user_id);
-		 cartItemResponse.setCartItem(cartItemResponseList);
+		CartItemResponse  cartItemResponse = null;
+		CartItemResponseList cartItemResponseList = new CartItemResponseList();
+		ProductResponseList prs = null;
+		List<CartItem> cartItemList  = cartRepository.findByUserIdAndStatus(user_id,"In Cart");
+		
+		for(CartItem cartItem:cartItemList) {
+			cartItemResponse = new CartItemResponse();
+			prs = productService.getProductById(cartItem.getProduct_id());
+			cartItemResponse.setCartItem(cartItem);
+			cartItemResponse.setImg_path(prs.getProductResponse().get(0).getImg_path());
+			cartItemResponse.setPrice(prs.getProductResponse().get(0).getPrice());
+			cartItemResponse.setProduct_name(prs.getProductResponse().get(0).getProduct_name());
+			cartItemResponseList.setCartItemResponse(cartItemResponse);
+		}
+		
+		
 		 return cartItemResponse;
 		//return  new ResponseEntity<cartItemResponse>(cartItemResponse,HttpStatus.OK);
 		
 	}
-	
-	
 	
 
 }

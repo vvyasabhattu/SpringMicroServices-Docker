@@ -1,4 +1,4 @@
-package org.evoke.cart.model;
+package org.order.service.model;
 
 import java.util.List;
 

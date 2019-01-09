@@ -9,7 +9,7 @@ public interface CartRepository extends JpaRepository<CartItem, Integer>{
 
 	public List<CartItem> findByUserId(int userId);
 	
-		
+	public List<CartItem> findByUserIdAndStatus(int userId,String status);
 		
 	
 }
